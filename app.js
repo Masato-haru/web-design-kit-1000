@@ -475,22 +475,7 @@ class WebDesignKitApp {
         const endIndex = startIndex + this.itemsPerPage;
         const currentItems = this.filteredData.slice(startIndex, endIndex);
 
-        // 表示前にフォントを事前読み込み
-        const fontLoadPromises = [];
-        currentItems.forEach(kit => {
-            fontLoadPromises.push(
-                fontManager.ensureFontLoaded(kit.fonts.heading),
-                fontManager.ensureFontLoaded(kit.fonts.body)
-            );
-        });
-
-        // フォント読み込み完了を待ってから表示
-        try {
-            await Promise.all(fontLoadPromises);
-        } catch (error) {
-            console.warn('Some fonts failed to load:', error);
-        }
-
+        // 即座にカードを表示（フォント読み込みを待たない）
         kitGrid.innerHTML = currentItems.map(kit => this.createKitCard(kit)).join('');
 
         // カードのクリックイベントを追加
@@ -501,7 +486,21 @@ class WebDesignKitApp {
             });
         });
 
+        // バックグラウンドでフォントを読み込み（非同期、優先度を下げる）
+        setTimeout(() => {
+            this.preloadFontsInBackground(currentItems);
+        }, 100);
+
         this.updateResultsCount();
+    }
+
+    // バックグラウンドでフォントを読み込む
+    preloadFontsInBackground(items) {
+        items.forEach(kit => {
+            // 非同期でフォントを読み込み、エラーは無視
+            fontManager.ensureFontLoaded(kit.fonts.heading).catch(() => {});
+            fontManager.ensureFontLoaded(kit.fonts.body).catch(() => {});
+        });
     }
 
     createKitCard(kit) {
@@ -1388,15 +1387,10 @@ input:focus, textarea:focus, select:focus {
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modalBody');
 
-        // フォントを事前読み込み（強化版）
-        await Promise.all([
-            fontManager.ensureFontLoaded(kit.fonts.heading),
-            fontManager.ensureFontLoaded(kit.fonts.body)
-        ]);
+        // モーダルを即座に表示
+        modal.style.display = 'block';
         
-        // 追加で明示的に読み込み確認
-        await this.waitForFontsReady([kit.fonts.heading, kit.fonts.body]);
-
+        // フォント読み込みを待たずに即座にコンテンツを生成
         const colorPalette = kit.color_palette.map(color => `
             <div class="modal-color-item">
                 <div class="modal-color-swatch" style="background-color: ${color}"></div>
@@ -1407,6 +1401,7 @@ input:focus, textarea:focus, select:focus {
             </div>
         `).join('');
 
+        // 即座にモーダルコンテンツを表示
         modalBody.innerHTML = `
             <div class="modal-kit-details">
                 <h2>KIT #${kit.id} - ${kit.industry}</h2>
@@ -1446,20 +1441,7 @@ input:focus, textarea:focus, select:focus {
                 </div>
 
                 <div class="modal-section">
-                    <h3>Claude Code プロンプト</h3>
-                    <div class="modal-prompt">
-                        <div class="prompt-preview">
-                            <pre class="prompt-text" style="font-family: ${fontManager.getFontFamily(kit.fonts.body)};">${this.generateClaudeCodePrompt(kit)}</pre>
-                        </div>
-                        <div class="prompt-actions">
-                            <button class="copy-btn copy-prompt" data-prompt-id="${kit.id}">📋 Claude Codeで使用</button>
-                            <small class="copy-hint">コピーしたプロンプトをClaude Codeに貼り付けて実行してください</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-section">
-                    <h3>CSS変数として使用</h3>
+                    <h3>CSS変数</h3>
                     <div class="css-variables">
                         <pre><code>:root {
   --primary-color: ${kit.color_palette[0]};
@@ -1481,14 +1463,20 @@ input:focus, textarea:focus, select:focus {
                 </div>
 
                 <div class="modal-section">
-                    <h3>HTMLスタイル指示</h3>
-                    <div class="html-style-guide">
-                        ${this.generateHTMLStyleGuide(kit)}
+                    <h3>Claude Code プロンプト</h3>
+                    <div class="prompt-section">
+                        <div class="prompt-display">
+                            <pre><code>${this.generateClaudeCodePrompt(kit)}</code></pre>
+                        </div>
+                        <button class="copy-prompt copy-btn-large">📋 プロンプト全体をコピー</button>
                     </div>
                 </div>
-
             </div>
         `;
+
+        // バックグラウンドでフォントを読み込み（非同期）
+        fontManager.ensureFontLoaded(kit.fonts.heading).catch(() => {});
+        fontManager.ensureFontLoaded(kit.fonts.body).catch(() => {});
 
         // モーダル専用スタイルを追加
         if (!document.getElementById('modal-styles')) {
