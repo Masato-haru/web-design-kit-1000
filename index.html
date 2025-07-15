@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web制作KIT 1000選 - カラーパレット＆フォント組み合わせ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20250715-1620">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="WebKIT1000">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header-title">Web制作KIT 1000選</h1>
+            <p class="header-subtitle">業種別カラーパレット＆日本語フォント組み合わせ</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- モバイル用オーバーレイ -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- モバイル用ハンバーガーメニュー -->
+        <button class="mobile-filter-toggle" id="mobileFilterToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+            フィルター
+        </button>
+
+        <!-- サイドバー -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>フィルター・検索</h3>
+                <button class="sidebar-close" id="sidebarClose">×</button>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- 検索・基本フィルター -->
+                <div class="filter-group">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="キーワードで検索..." class="search-input">
+                    </div>
+                    <div class="industry-filter">
+                        <label for="industryFilter">業種</label>
+                        <select id="industryFilter" class="industry-select">
+                            <option value="">すべての業種</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- カラーフィルター -->
+                <div class="filter-group">
+                    <h4>カラーフィルター</h4>
+                    <div class="color-checkboxes">
+                        <label class="color-checkbox red">
+                            <input type="checkbox" id="colorRed" value="red">
+                            <span class="color-indicator red-color"></span>
+                            赤系
+                        </label>
+                        <label class="color-checkbox orange">
+                            <input type="checkbox" id="colorOrange" value="orange">
+                            <span class="color-indicator orange-color"></span>
+                            橙系
+                        </label>
+                        <label class="color-checkbox yellow">
+                            <input type="checkbox" id="colorYellow" value="yellow">
+                            <span class="color-indicator yellow-color"></span>
+                            黄系
+                        </label>
+                        <label class="color-checkbox green">
+                            <input type="checkbox" id="colorGreen" value="green">
+                            <span class="color-indicator green-color"></span>
+                            緑系
+                        </label>
+                        <label class="color-checkbox blue">
+                            <input type="checkbox" id="colorBlue" value="blue">
+                            <span class="color-indicator blue-color"></span>
+                            青系
+                        </label>
+                        <label class="color-checkbox purple">
+                            <input type="checkbox" id="colorPurple" value="purple">
+                            <span class="color-indicator purple-color"></span>
+                            紫系
+                        </label>
+                        <label class="color-checkbox gray">
+                            <input type="checkbox" id="colorGray" value="gray">
+                            <span class="color-indicator gray-color"></span>
+                            グレー系
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- ソートオプション -->
+                <div class="filter-group">
+                    <div class="sort-header">
+                        <h4>ソート条件</h4>
+                        <button id="clearSortBtn" class="clear-sort-btn">クリア</button>
+                    </div>
+                    <div class="sort-checkboxes">
+                        <!-- 基本ソート -->
+                        <div class="sort-category">
+                            <h5>基本</h5>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="id" data-category="basic">
+                                <span class="sort-indicator"></span>
+                                ID順
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="industry" data-category="basic">
+                                <span class="sort-indicator"></span>
+                                業種順
+                            </label>
+                        </div>
+                        
+                        <!-- カラーソート -->
+                        <div class="sort-category">
+                            <h5>カラー特性</h5>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="brightness" data-category="color">
+                                <span class="sort-indicator"></span>
+                                明るさ順
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="hue" data-category="color">
+                                <span class="sort-indicator"></span>
+                                色相順
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="saturation" data-category="color">
+                                <span class="sort-indicator"></span>
+                                彩度順
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="warmth" data-category="color">
+                                <span class="sort-indicator"></span>
+                                暖色・寒色順
+                            </label>
+                        </div>
+                        
+                        <!-- 印象ソート -->
+                        <div class="sort-category">
+                            <h5>印象・雰囲気</h5>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="cool" data-category="impression">
+                                <span class="sort-indicator cool-indicator"></span>
+                                かっこいい
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="cute" data-category="impression">
+                                <span class="sort-indicator cute-indicator"></span>
+                                かわいい
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="stylish" data-category="impression">
+                                <span class="sort-indicator stylish-indicator"></span>
+                                スタイリッシュ
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="elegant" data-category="impression">
+                                <span class="sort-indicator elegant-indicator"></span>
+                                エレガント
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="friendly" data-category="impression">
+                                <span class="sort-indicator friendly-indicator"></span>
+                                親しみやすい
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="professional" data-category="impression">
+                                <span class="sort-indicator professional-indicator"></span>
+                                プロフェッショナル
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="luxurious" data-category="impression">
+                                <span class="sort-indicator luxurious-indicator"></span>
+                                高級感
+                            </label>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="playful" data-category="impression">
+                                <span class="sort-indicator playful-indicator"></span>
+                                遊び心
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- メインコンテンツエリア -->
+        <div class="main-content">
+            <!-- 結果情報 -->
+            <div class="results-header">
+                <div class="results-info">
+                    <span id="resultsCount">0</span> 件の結果
+                    <span id="sortInfo" class="sort-info"></span>
+                </div>
+            </div>
+
+            <!-- KITカードグリッド -->
+            <section class="kit-grid" id="kitGrid">
+                <!-- JavaScriptで動的に生成 -->
+            </section>
+
+            <!-- ローディング -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>データを読み込み中...</p>
+            </div>
+
+            <!-- データなし -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <p>検索条件に一致するKITが見つかりませんでした。</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- モーダル（詳細表示用） -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="modal-body" id="modalBody">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Web制作KIT 1000選. VibeCoding向けプロンプト付き</p>
+        </div>
+    </footer>
+
+    <script src="app.js?v=20250715-1610"></script>
+</body>
+</html>

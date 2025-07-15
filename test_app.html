@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テストアプリ</title>
+</head>
+<body>
+    <div id="test-output"></div>
+    <script>
+        // アプリケーションの基本動作テスト
+        console.log('テスト開始');
+        
+        // JSON読み込みテスト
+        fetch('web_design_kit_1000.json')
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('JSON読み込み成功:', data.kit_data.length, '件');
+                document.getElementById('test-output').innerHTML = 
+                    `<p>✅ JSON読み込み成功: ${data.kit_data.length}件</p>`;
+                    
+                // 基本的なDOM操作テスト
+                console.log('DOM操作テスト');
+                const testDiv = document.createElement('div');
+                testDiv.innerHTML = '<p>✅ DOM操作成功</p>';
+                document.getElementById('test-output').appendChild(testDiv);
+                
+                // フォント読み込みテスト
+                console.log('フォント読み込みテスト');
+                const link = document.createElement('link');
+                link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap';
+                link.rel = 'stylesheet';
+                document.head.appendChild(link);
+                
+                const fontTestDiv = document.createElement('div');
+                fontTestDiv.innerHTML = '<p style="font-family: \'Noto Sans JP\', sans-serif;">✅ フォント読み込み成功</p>';
+                document.getElementById('test-output').appendChild(fontTestDiv);
+                
+            })
+            .catch(error => {
+                console.error('エラー:', error);
+                document.getElementById('test-output').innerHTML = 
+                    `<p>❌ エラー: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>

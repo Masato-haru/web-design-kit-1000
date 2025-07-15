@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ローカルデバッグ</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; margin: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+        .loading { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Web制作KIT デバッグ</h1>
+    <div id="status">
+        <p class="loading">テスト実行中...</p>
+    </div>
+    <div id="details"></div>
+    
+    <script>
+        // デバッグ用の簡単なテスト
+        const status = document.getElementById('status');
+        const details = document.getElementById('details');
+        
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            p.className = type;
+            p.textContent = message;
+            details.appendChild(p);
+            console.log(message);
+        }
+        
+        function showJSON(data) {
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(data, null, 2);
+            details.appendChild(pre);
+        }
+        
+        async function debugTest() {
+            try {
+                log('1. DOM要素チェック開始');
+                
+                // 必須要素の存在チェック
+                const requiredElements = ['loading', 'kitGrid', 'searchInput', 'industryFilter'];
+                let missingElements = [];
+                
+                requiredElements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (!element) {
+                        missingElements.push(id);
+                    }
+                });
+                
+                if (missingElements.length > 0) {
+                    log(`❌ 必須要素が見つかりません: ${missingElements.join(', ')}`, 'error');
+                } else {
+                    log('✅ 必須要素すべて存在', 'success');
+                }
+                
+                log('2. JSON読み込みテスト開始');
+                
+                // JSONファイルの存在チェック
+                const response = await fetch('web_design_kit_1000.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                log(`✅ JSON読み込み成功: ${data.kit_data.length}件`, 'success');
+                
+                // 最初の3件を表示
+                if (data.kit_data.length > 0) {
+                    log('最初の3件のデータ:');
+                    showJSON(data.kit_data.slice(0, 3));
+                }
+                
+                log('3. フォント読み込みテスト');
+                
+                // Google Fonts APIテスト
+                const testFonts = ['Noto Sans JP', 'Noto Serif JP', 'M PLUS 1p'];
+                testFonts.forEach(font => {
+                    const testDiv = document.createElement('div');
+                    testDiv.style.fontFamily = `'${font}', sans-serif`;
+                    testDiv.textContent = `${font} フォントテスト`;
+                    details.appendChild(testDiv);
+                });
+                
+                log('4. 基本的な機能テスト完了', 'success');
+                status.innerHTML = '<p class="success">✅ 基本テスト完了</p>';
+                
+            } catch (error) {
+                log(`❌ エラー: ${error.message}`, 'error');
+                status.innerHTML = '<p class="error">❌ テスト失敗</p>';
+            }
+        }
+        
+        // テスト実行
+        debugTest();
+    </script>
+</body>
+</html>

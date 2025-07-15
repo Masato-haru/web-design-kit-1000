@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デバッグテスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .loading { text-align: center; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Web制作KIT デバッグテスト</h1>
+    <div id="status" class="status info">テスト開始中...</div>
+    <div id="details"></div>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const detailsDiv = document.getElementById('details');
+        
+        function log(message, type = 'info') {
+            console.log(message);
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            detailsDiv.appendChild(div);
+        }
+        
+        function showData(data) {
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(data, null, 2);
+            detailsDiv.appendChild(pre);
+        }
+        
+        async function runTest() {
+            try {
+                statusDiv.textContent = 'ステップ1: JSONファイル読み込みテスト';
+                
+                // JSONファイルの読み込みテスト
+                const response = await fetch('web_design_kit_1000.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                log(`✅ JSON読み込み成功: ${data.kit_data.length}件のデータ`, 'success');
+                
+                // 最初のデータを表示
+                log('最初のKITデータ:', 'info');
+                showData(data.kit_data[0]);
+                
+                statusDiv.textContent = 'ステップ2: DOM要素チェック';
+                
+                // 基本的なDOM操作テスト
+                const testDiv = document.createElement('div');
+                testDiv.innerHTML = '<p>DOM操作テスト成功</p>';
+                
+                log('✅ DOM操作テスト成功', 'success');
+                
+                statusDiv.textContent = 'ステップ3: 簡単なカード表示テスト';
+                
+                // 簡単なカード表示
+                const cardContainer = document.createElement('div');
+                cardContainer.innerHTML = `
+                    <div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                        <h3>KIT #${data.kit_data[0].id} - ${data.kit_data[0].industry}</h3>
+                        <div style="display: flex; height: 30px; margin: 10px 0;">
+                            ${data.kit_data[0].color_palette.map(color => 
+                                `<div style="flex: 1; background-color: ${color}; margin-right: 2px;" title="${color}"></div>`
+                            ).join('')}
+                        </div>
+                        <p>見出し: ${data.kit_data[0].fonts.heading}</p>
+                        <p>本文: ${data.kit_data[0].fonts.body}</p>
+                    </div>
+                `;
+                detailsDiv.appendChild(cardContainer);
+                
+                log('✅ カード表示テスト成功', 'success');
+                
+                statusDiv.textContent = '🎉 全テスト完了！';
+                statusDiv.className = 'status success';
+                
+            } catch (error) {
+                log(`❌ エラー: ${error.message}`, 'error');
+                statusDiv.textContent = '❌ テスト失敗';
+                statusDiv.className = 'status error';
+                
+                // エラーの詳細分析
+                if (error.message.includes('Failed to fetch')) {
+                    log('原因: HTTPサーバーが起動していないか、CORSエラーです', 'error');
+                    log('解決方法: "python3 -m http.server 8080" を実行してからhttp://localhost:8080でアクセス', 'info');
+                } else if (error.message.includes('404')) {
+                    log('原因: JSONファイルが見つかりません', 'error');
+                } else {
+                    log('原因: 不明なエラー', 'error');
+                }
+            }
+        }
+        
+        // テスト実行
+        runTest();
+    </script>
+</body>
+</html>
