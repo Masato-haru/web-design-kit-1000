@@ -1721,11 +1721,89 @@ module.exports = {
 ## HTMLテンプレート構造
 \`\`\`html
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${kit.industry}サイト</title>
+    
+    <!-- SEO基本タグ -->
+    <title>${kit.industry}のプロフェッショナルサービス | 信頼と実績の${kit.industry}専門企業</title>
+    <meta name="description" content="${kit.industry}業界で最高品質のサービスを提供。お客様のニーズに合わせたソリューションで、ビジネスの成功をサポートします。無料相談受付中。">
+    <meta name="keywords" content="${kit.industry}, サービス, 専門, 相談, ビジネス, ソリューション, 実績, 信頼">
+    <meta name="author" content="${kit.industry}専門サービス">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://example.com/">
+    
+    <!-- OGP (Open Graph Protocol) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="${kit.industry}のプロフェッショナルサービス">
+    <meta property="og:description" content="${kit.industry}業界で最高品質のサービスを提供。お客様のニーズに合わせたソリューションでビジネス成功をサポート。">
+    <meta property="og:url" content="https://example.com/">
+    <meta property="og:site_name" content="${kit.industry}専門サービス">
+    <meta property="og:image" content="https://example.com/og-image.jpg">
+    <meta property="og:image:alt" content="${kit.industry}サービスのイメージ">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${kit.industry}のプロフェッショナルサービス">
+    <meta name="twitter:description" content="${kit.industry}業界で最高品質のサービスを提供。無料相談受付中。">
+    <meta name="twitter:image" content="https://example.com/twitter-image.jpg">
+    <meta name="twitter:image:alt" content="${kit.industry}サービスのイメージ">
+    <meta name="twitter:site" content="@your_twitter_handle">
+    <meta name="twitter:creator" content="@your_twitter_handle">
+    
+    <!-- 追加SEOタグ -->
+    <meta name="theme-color" content="${kit.color_palette[0]}">
+    <meta name="msapplication-TileColor" content="${kit.color_palette[0]}">
+    <meta name="application-name" content="${kit.industry}サービス">
+    <meta name="apple-mobile-web-app-title" content="${kit.industry}サービス">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- JSON-LD 構造化データ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "${kit.industry}専門サービス",
+        "url": "https://example.com",
+        "logo": "https://example.com/logo.png",
+        "description": "${kit.industry}業界で最高品質のサービスを提供する専門企業です。",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+81-3-1234-5678",
+            "contactType": "customer service",
+            "availableLanguage": "Japanese"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "JP",
+            "addressRegion": "東京都",
+            "addressLocality": "渋谷区"
+        },
+        "sameAs": [
+            "https://www.facebook.com/yourpage",
+            "https://twitter.com/yourhandle",
+            "https://www.linkedin.com/company/yourcompany"
+        ]
+    }
+    </script>
+    
+    <!-- パフォーマンス最適化 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="//api.unsplash.com">
+    <link rel="dns-prefetch" href="//pixabay.com">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1853,25 +1931,180 @@ class VideoLoader extends ImageLoader {
 }
 \`\`\`
 
+## SEO最適化JavaScript
+\`\`\`javascript
+// SEO最適化クラス
+class SEOOptimizer {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.generateSitemap();
+        this.addStructuredData();
+        this.optimizeImages();
+        this.setupAnalytics();
+    }
+
+    // 自動サイトマップ生成
+    generateSitemap() {
+        const sitemap = \`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://example.com/</loc>
+        <lastmod>\${new Date().toISOString().split('T')[0]}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://example.com/services/</loc>
+        <lastmod>\${new Date().toISOString().split('T')[0]}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+</urlset>\`;
+        console.log('Sitemap generated:', sitemap);
+    }
+
+    // 追加構造化データ
+    addStructuredData() {
+        const serviceSchema = {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "name": "${kit.industry}専門サービス",
+            "description": "${kit.industry}業界で最高品質のサービスを提供",
+            "provider": {
+                "@type": "Organization",
+                "name": "${kit.industry}専門企業"
+            },
+            "serviceType": "${kit.industry}コンサルティング",
+            "areaServed": "日本",
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "${kit.industry}サービス一覧",
+                "itemListElement": [
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "${kit.industry}コンサルティング"
+                        }
+                    }
+                ]
+            }
+        };
+
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(serviceSchema);
+        document.head.appendChild(script);
+    }
+
+    // 画像SEO最適化
+    optimizeImages() {
+        document.querySelectorAll('img').forEach(img => {
+            // Lazy loading
+            img.loading = 'lazy';
+            
+            // Alt属性の自動生成
+            if (!img.alt) {
+                img.alt = \`${kit.industry}関連の画像\`;
+            }
+        });
+    }
+
+    // Google Analytics設定
+    setupAnalytics() {
+        // Google Analytics 4
+        const gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+        document.head.appendChild(gaScript);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    }
+}
+
+// SEO最適化実行
+document.addEventListener('DOMContentLoaded', () => {
+    new SEOOptimizer();
+});
+\`\`\`
+
+## robots.txt自動生成
+\`\`\`txt
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml
+
+# 重要ページの優先クロール
+Crawl-delay: 1
+
+# 除外ディレクトリ
+Disallow: /admin/
+Disallow: /private/
+\`\`\`
+
+## site.webmanifest設定
+\`\`\`json
+{
+    "name": "${kit.industry}専門サービス",
+    "short_name": "${kit.industry}サービス",
+    "description": "${kit.industry}業界で最高品質のサービスを提供",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "${kit.color_palette[1]}",
+    "theme_color": "${kit.color_palette[0]}",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+\`\`\`
+
 ## 使用手順
-1. **Unsplash API**: https://unsplash.com/developers でAPIキーを無料取得
-2. **Pixabay API**: https://pixabay.com/api/docs/ で動画APIキーを無料取得  
-3. JavaScript内のAPIキーを実際のキーに置き換え
-4. 画像配置: data-auto-image 属性を追加
-5. 動画配置: data-auto-video 属性を追加
-6. カスタムキーワード: data-image-keyword / data-video-keyword 属性で指定
+1. **API設定**:
+   - Unsplash API: https://unsplash.com/developers 
+   - Pixabay API: https://pixabay.com/api/docs/
+   - Google Analytics: https://analytics.google.com/
 
-## 特徴
-✅ **Tailwind CSS** 完全ベース
-✅ **フル画面スライダー** (100vh) 
-✅ **3パターンの質問** 業界別カスタマイズ
-✅ **背景動画** + モバイル静止画フォールバック
-✅ **自動スライド** (5秒) + 手動操作
-✅ **スワイプ対応** モバイル最適化
-✅ **無料画像・動画** 自動配置
-✅ **レスポンシブ** 完全対応
+2. **SEO設定**:
+   - サイトマップ自動生成
+   - robots.txt配置
+   - site.webmanifest設定
+   - 構造化データ実装
 
-完全に動作し、Tailwind CSSベースでフル画面スライダー・背景動画・3パターンの質問が実装されたモダンなWebサイトを作成してください。`;
+3. **ファイル配置**:
+   - favicon.ico (ルート)
+   - apple-touch-icon.png (180x180px)
+   - android-chrome-192x192.png
+   - android-chrome-512x512.png
+
+## 完全なSEO機能
+✅ **基本SEO**: title, description, keywords, robots
+✅ **OGP完全対応**: Facebook, LINE共有最適化
+✅ **Twitter Cards**: 大画像カード対応
+✅ **JSON-LD構造化データ**: Organization, Service
+✅ **PWA対応**: Manifest, Theme color
+✅ **Favicon完全セット**: 全デバイス対応
+✅ **パフォーマンス**: preconnect, dns-prefetch
+✅ **Analytics**: Google Analytics 4対応
+✅ **Sitemap**: 自動生成機能
+✅ **画像SEO**: lazy loading, alt自動生成
+
+完全にSEO最適化され、Tailwind CSSベースでフル画面スライダー・背景動画・3パターンの質問が実装されたモダンなWebサイトを作成してください。`;
     }
 
     copyPromptToClipboard(button, prompt) {
