@@ -1417,7 +1417,22 @@ input:focus, textarea:focus, select:focus {
             "金融": "堅実で信頼性の高い金融サービスサイト"
         };
 
+        // 業種別の画像キーワードマッピング
+        const imageKeywords = {
+            "コーポレート": "business office corporate professional team meeting",
+            "テック・IT": "technology computer coding programming innovation",
+            "クリエイティブ": "creative design art studio portfolio gallery",
+            "ヘルスケア": "healthcare medical doctor hospital wellness",
+            "ファッション": "fashion clothing style boutique accessories",
+            "食品・飲食": "food restaurant cooking culinary delicious",
+            "教育": "education school learning students classroom",
+            "不動産": "real estate property house apartment building",
+            "エンターテイメント": "entertainment music concert gaming fun",
+            "金融": "finance banking money investment financial"
+        };
+
         const description = industryDescriptions[kit.industry] || "プロフェッショナルなWebサイト";
+        const keywords = imageKeywords[kit.industry] || "business professional";
         
         return `${description}を作成してください。
 
@@ -1433,6 +1448,86 @@ input:focus, textarea:focus, select:focus {
 - 見出し用フォント: ${kit.fonts.heading}
 - 本文用フォント: ${kit.fonts.body}
 
+## 無料画像の自動配置機能
+以下のJavaScriptコードを追加して、Unsplash APIから無料画像を自動で取得・配置してください：
+
+\`\`\`javascript
+// 無料画像自動配置機能
+class ImageLoader {
+    constructor() {
+        this.unsplashAccessKey = 'YOUR_UNSPLASH_ACCESS_KEY'; // 無料のUnsplash API Key
+        this.imageKeywords = '${keywords}';
+    }
+
+    async loadImages() {
+        try {
+            // 画像プレースホルダーを全て取得
+            const imagePlaceholders = document.querySelectorAll('[data-auto-image]');
+            
+            for (let i = 0; i < imagePlaceholders.length; i++) {
+                const placeholder = imagePlaceholders[i];
+                const customKeyword = placeholder.dataset.imageKeyword || this.imageKeywords;
+                
+                // Unsplash APIから画像を取得
+                const imageUrl = await this.fetchUnsplashImage(customKeyword, i);
+                
+                if (imageUrl) {
+                    placeholder.src = imageUrl;
+                    placeholder.alt = \`\${customKeyword}の画像\`;
+                    placeholder.style.opacity = '1';
+                }
+            }
+        } catch (error) {
+            console.log('画像の読み込みに失敗しました:', error);
+            // フォールバック: プレースホルダー画像を使用
+            this.usePlaceholderImages();
+        }
+    }
+
+    async fetchUnsplashImage(keyword, index = 0) {
+        try {
+            const response = await fetch(\`https://api.unsplash.com/photos/random?query=\${encodeURIComponent(keyword)}&client_id=\${this.unsplashAccessKey}&orientation=landscape&per_page=1\`);
+            const data = await response.json();
+            return data.urls?.regular || null;
+        } catch (error) {
+            // API制限に達した場合やエラーの場合は、Lorem Picsumを使用
+            return \`https://picsum.photos/800/600?random=\${index}\`;
+        }
+    }
+
+    usePlaceholderImages() {
+        const imagePlaceholders = document.querySelectorAll('[data-auto-image]');
+        imagePlaceholders.forEach((img, index) => {
+            img.src = \`https://picsum.photos/800/600?random=\${index}\`;
+            img.alt = '画像';
+            img.style.opacity = '1';
+        });
+    }
+}
+
+// ページ読み込み完了後に画像を自動読み込み
+document.addEventListener('DOMContentLoaded', () => {
+    const imageLoader = new ImageLoader();
+    imageLoader.loadImages();
+});
+\`\`\`
+
+## HTML構造での画像配置
+HTMLで画像を配置する際は以下のような属性を使用してください：
+
+\`\`\`html
+<!-- メインビジュアル -->
+<img data-auto-image data-image-keyword="${keywords}" src="" alt="Loading..." style="opacity: 0; transition: opacity 0.5s;">
+
+<!-- セクション画像 -->
+<img data-auto-image data-image-keyword="team collaboration" src="" alt="Loading..." style="opacity: 0; transition: opacity 0.5s;">
+
+<!-- 背景画像として使用する場合 -->
+<div class="hero-section" data-auto-bg-image data-image-keyword="${keywords}">
+  <!-- コンテンツ -->
+</div>
+\`\`\`
+
 ## 実装要件
 - レスポンシブデザイン（モバイル・タブレット・デスクトップ対応）
 - モダンなHTML5/CSS3を使用
@@ -1441,11 +1536,13 @@ input:focus, textarea:focus, select:focus {
 - ${kit.industry}業界らしいコンテンツとレイアウト
 - Google Fonts APIを使用してフォントを読み込み
 - CSSカスタムプロパティ（CSS変数）を活用
+- 無料画像が自動で隙間なく配置される機能を実装
+- 画像読み込み中のプレースホルダー表示
 
 # 必要なファイル
 - index.html
 - styles.css
-- 必要に応じてJavaScript
+- script.js（画像自動読み込み機能含む）
 
 # 実装例
 ## CSS変数の設定
@@ -1458,6 +1555,21 @@ input:focus, textarea:focus, select:focus {
   --heading-font: '${kit.fonts.heading}', sans-serif;
   --body-font: '${kit.fonts.body}', sans-serif;
 }
+
+/* 画像読み込み用スタイル */
+[data-auto-image] {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: opacity 0.5s ease;
+}
+
+[data-auto-bg-image] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 \`\`\`
 
 ## Google Fonts読み込み
@@ -1465,7 +1577,13 @@ input:focus, textarea:focus, select:focus {
 <link href="https://fonts.googleapis.com/css2?family=${kit.fonts.heading.replace(/\s/g, '+')}:wght@400;600;700&family=${kit.fonts.body.replace(/\s/g, '+')}:wght@400;500&display=swap" rel="stylesheet">
 \`\`\`
 
-完全に動作するWebサイトを作成してください。`;
+## 使用手順
+1. Unsplash（https://unsplash.com/developers）でAPIキーを無料取得
+2. JavaScript内の 'YOUR_UNSPLASH_ACCESS_KEY' を実際のAPIキーに置き換え
+3. 画像を配置したい場所に data-auto-image 属性を追加
+4. カスタムキーワードが必要な場合は data-image-keyword 属性を指定
+
+完全に動作し、画像が自動で隙間なく配置されるWebサイトを作成してください。`;
     }
 
     copyPromptToClipboard(button, prompt) {
