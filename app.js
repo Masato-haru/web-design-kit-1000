@@ -1877,7 +1877,45 @@ module.exports = {
             </div>
         </div>
         
-        <!-- スライド2, 3も同様の構造 -->
+        <!-- スライド2 -->
+        <div class="hero-slide absolute inset-0 flex items-center justify-center">
+            <video class="bg-video absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+                <source data-auto-video data-video-keyword="${keywords} team collaboration" type="video/mp4">
+            </video>
+            <div class="md:hidden absolute inset-0 bg-cover bg-center" data-auto-bg-image data-image-keyword="${keywords} team"></div>
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative z-10 text-center text-white px-4 max-w-4xl">
+                <h1 class="font-heading text-4xl md:text-6xl font-bold mb-6">
+                    お客様に提供したい価値やサービスの特徴は？
+                </h1>
+                <p class="text-lg md:text-xl mb-8 font-body">
+                    ${kit.industry}事業ならではの独自の価値をお聞かせください
+                </p>
+                <button class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-semibold transition-all">
+                    回答する
+                </button>
+            </div>
+        </div>
+        
+        <!-- スライド3 -->
+        <div class="hero-slide absolute inset-0 flex items-center justify-center">
+            <video class="bg-video absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+                <source data-auto-video data-video-keyword="${keywords} innovation success" type="video/mp4">
+            </video>
+            <div class="md:hidden absolute inset-0 bg-cover bg-center" data-auto-bg-image data-image-keyword="${keywords} success"></div>
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative z-10 text-center text-white px-4 max-w-4xl">
+                <h1 class="font-heading text-4xl md:text-6xl font-bold mb-6">
+                    競合他社との違いや強みは何ですか？
+                </h1>
+                <p class="text-lg md:text-xl mb-8 font-body">
+                    ${kit.industry}業界であなたが選ばれる理由をお聞かせください
+                </p>
+                <button class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-semibold transition-all">
+                    回答する
+                </button>
+            </div>
+        </div>
         
         <!-- スライダーコントロール -->
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
