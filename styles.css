@@ -334,6 +334,7 @@ body {
 .professional-indicator { background: linear-gradient(45deg, #2980b9, #3498db); }
 .luxurious-indicator { background: linear-gradient(45deg, #8b4513, #d4af37); }
 .playful-indicator { background: linear-gradient(45deg, #e74c3c, #ff6b35); }
+.popularity-indicator { background: linear-gradient(45deg, #ff6b6b, #ee5a24); }
 
 .clear-sort-btn {
     background: #dc3545;
@@ -384,6 +385,7 @@ body {
 .card-header {
     padding: 1rem;
     border-bottom: 1px solid #e9ecef;
+    position: relative;
 }
 
 .card-id {
@@ -397,6 +399,37 @@ body {
     font-weight: 600;
     margin: 0.25rem 0;
     color: #212529;
+}
+
+/* 人気度バッジ */
+.popularity-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    min-width: 40px;
+}
+
+.popularity-badge.popular {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+    animation: pulse-popular 2s infinite;
+}
+
+.popularity-badge.general {
+    background: linear-gradient(135deg, #4834d4, #686de0);
+    box-shadow: 0 2px 4px rgba(72, 52, 212, 0.3);
+}
+
+@keyframes pulse-popular {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 /* カラーパレット */

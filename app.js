@@ -22,6 +22,12 @@ class WebDesignKitApp {
             await this.loadData();
             console.log('データ読み込み完了:', this.kitData.length, '件');
             
+            // 人気フォントの優先表示設定
+            this.setupPopularFonts();
+            
+            // 人気度スコア計算後に再ソート
+            this.sortByPopularity();
+            
             this.setupEventListeners();
             console.log('イベントリスナー設定完了');
             
@@ -38,6 +44,83 @@ class WebDesignKitApp {
             console.error('アプリの初期化に失敗しました:', error);
             this.showError('データの読み込みに失敗しました。詳細: ' + error.message);
         }
+    }
+
+    setupPopularFonts() {
+        // 人気フォントの定義
+        this.popularFonts = {
+            heading: [
+                'Noto Sans JP',
+                'Noto Serif JP', 
+                'M PLUS 1p',
+                'Hiragino Sans',
+                'Yu Gothic',
+                'Zen Kaku Gothic New'
+            ],
+            body: [
+                'Noto Sans JP',
+                'Noto Serif JP',
+                'M PLUS 1p', 
+                'Hiragino Sans',
+                'Yu Gothic',
+                'Source Han Sans'
+            ]
+        };
+
+        // 各KITに人気度スコアを追加
+        this.kitData.forEach(kit => {
+            kit.popularityScore = this.calculatePopularityScore(kit);
+        });
+    }
+
+    calculatePopularityScore(kit) {
+        let score = 0;
+        
+        // フォントの人気度チェック
+        if (this.popularFonts.heading.includes(kit.fonts.heading)) {
+            score += this.popularFonts.heading.indexOf(kit.fonts.heading) === 0 ? 100 : 50; // Noto Sans JPは最高点
+        }
+        if (this.popularFonts.body.includes(kit.fonts.body)) {
+            score += this.popularFonts.body.indexOf(kit.fonts.body) === 0 ? 100 : 50;
+        }
+        
+        // 同じフォントの組み合わせ（Noto Sans JP）にボーナス
+        if (kit.fonts.heading === 'Noto Sans JP' && kit.fonts.body === 'Noto Sans JP') {
+            score += 200; // 特別ボーナス
+        }
+        
+        // 一般的な組み合わせにボーナス
+        const popularCombinations = [
+            { heading: 'Noto Serif JP', body: 'Noto Sans JP' },
+            { heading: 'M PLUS 1p', body: 'M PLUS 1p' },
+            { heading: 'Hiragino Sans', body: 'Hiragino Sans' }
+        ];
+        
+        const hasPopularCombo = popularCombinations.some(combo => 
+            combo.heading === kit.fonts.heading && combo.body === kit.fonts.body
+        );
+        
+        if (hasPopularCombo) {
+            score += 75;
+        }
+        
+        return score;
+    }
+
+    sortByPopularity() {
+        // 人気度順でソート（高い順）
+        this.filteredData.sort((a, b) => {
+            return (b.popularityScore || 0) - (a.popularityScore || 0);
+        });
+        
+        console.log('人気度ソート完了。上位5件:', 
+            this.filteredData.slice(0, 5).map(kit => ({
+                id: kit.id,
+                heading: kit.fonts.heading,
+                body: kit.fonts.body,
+                score: kit.popularityScore
+            }))
+        );
     }
 
     async loadData() {
@@ -58,7 +141,12 @@ class WebDesignKitApp {
             console.log('JSONパース完了:', data);
             
             this.kitData = data.kit_data || [];
-            this.filteredData = [...this.kitData];
+            
+            // 初期状態では人気順でソート
+            this.filteredData = [...this.kitData].sort((a, b) => {
+                // 人気度スコアがまだ計算されていない場合は後で計算される
+                return (b.popularityScore || 0) - (a.popularityScore || 0);
+            });
             
             console.log('データ設定完了:', this.kitData.length, '件');
             
@@ -359,6 +447,9 @@ class WebDesignKitApp {
 
     compareSingleCriterion(a, b, criterion) {
         switch (criterion) {
+            case 'popularity':
+                return (b.popularityScore || 0) - (a.popularityScore || 0);
+            
             case 'industry':
                 return a.industry.localeCompare(b.industry, 'ja');
             
@@ -514,11 +605,15 @@ class WebDesignKitApp {
         const headingText = this.getFontSampleText(kit.fonts.heading, 'heading');
         const bodyText = this.getFontSampleText(kit.fonts.body, 'body');
 
+        // 人気度バッジを決定
+        const popularityBadge = this.getPopularityBadge(kit);
+
         return `
             <div class="kit-card" data-id="${kit.id}">
                 <div class="card-header">
                     <div class="card-id">KIT #${kit.id}</div>
                     <div class="card-industry">${kit.industry}</div>
+                    ${popularityBadge}
                 </div>
                 <div class="color-palette">
                     ${colorSwatches}
@@ -546,6 +641,18 @@ class WebDesignKitApp {
                 </div>
             </div>
         `;
+    }
+
+    getPopularityBadge(kit) {
+        const score = kit.popularityScore || 0;
+        
+        if (score >= 200) {
+            return '<div class="popularity-badge popular">人気</div>';
+        } else if (score >= 100) {
+            return '<div class="popularity-badge general">一般</div>';
+        }
+        
+        return '';
     }
 
     async waitForFontsReady(fontNames) {

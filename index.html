@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20250715-1620">
+    <link rel="stylesheet" href="styles.css?v=20250715-1640">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <meta name="mobile-web-app-capable" content="yes">
@@ -108,6 +108,11 @@
                         <!-- 基本ソート -->
                         <div class="sort-category">
                             <h5>基本</h5>
+                            <label class="sort-checkbox">
+                                <input type="checkbox" value="popularity" data-category="basic" checked>
+                                <span class="sort-indicator popularity-indicator"></span>
+                                人気順
+                            </label>
                             <label class="sort-checkbox">
                                 <input type="checkbox" value="id" data-category="basic">
                                 <span class="sort-indicator"></span>
@@ -238,6 +243,6 @@
         </div>
     </footer>
 
-    <script src="app.js?v=20250715-1630"></script>
+    <script src="app.js?v=20250715-1640"></script>
 </body>
 </html>
