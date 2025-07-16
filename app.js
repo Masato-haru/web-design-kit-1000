@@ -1436,9 +1436,36 @@ input:focus, textarea:focus, select:focus {
         
         return `${description}を作成してください。
 
+# 基本フレームワーク
+- **Tailwind CSS** をベースフレームワークとして使用
+- モダンなユーティリティファーストアプローチ
+- レスポンシブデザイン完全対応
+
+# ファーストビューの要件
+## 3パターンの質問スライダー
+ファーストビューでは以下の3つの質問パターンをフル画面スライダーで表示：
+
+### 質問パターン例（${kit.industry}業界向け）
+1. **質問1**: 「${kit.industry}事業で一番大切にしていることは何ですか？」
+2. **質問2**: 「お客様に提供したい価値やサービスの特徴は？」  
+3. **質問3**: 「競合他社との違いや強みは何ですか？」
+
+## フル画面スライダー仕様
+- 画面全体（100vh）を使用したスライダー
+- スムーズなトランジション効果
+- 自動スライド（5秒間隔）+ 手動操作対応
+- インジケーター表示
+- モバイル対応のスワイプ操作
+
+## 背景動画機能
+- 各スライドに業界に適した背景動画を配置
+- 動画はミュート・ループ再生
+- モバイルでは静止画フォールバック
+- 動画上にオーバーレイで質問テキスト表示
+
 # デザイン指定
 
-## カラーパレット
+## カラーパレット（Tailwind CSS Custom Colors）
 - プライマリカラー: ${kit.color_palette[0]}
 - セカンダリカラー: ${kit.color_palette[1]}
 - アクセントカラー: ${kit.color_palette[2]}
@@ -1528,62 +1555,323 @@ HTMLで画像を配置する際は以下のような属性を使用してくだ�
 </div>
 \`\`\`
 
+## フル画面スライダーの実装
+以下のJavaScriptとTailwind CSSでフル画面スライダーを実装：
+
+\`\`\`javascript
+// フル画面スライダー機能
+class FullScreenSlider {
+    constructor() {
+        this.currentSlide = 0;
+        this.slides = document.querySelectorAll('.hero-slide');
+        this.totalSlides = this.slides.length;
+        this.autoSlideInterval = null;
+        this.init();
+    }
+
+    init() {
+        this.setupIndicators();
+        this.setupControls();
+        this.startAutoSlide();
+        this.setupTouchEvents();
+    }
+
+    setupIndicators() {
+        const indicators = document.querySelector('.slide-indicators');
+        for (let i = 0; i < this.totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = \`w-3 h-3 rounded-full transition-all duration-300 \${i === 0 ? 'bg-white' : 'bg-white/30'}\`;
+            dot.addEventListener('click', () => this.goToSlide(i));
+            indicators.appendChild(dot);
+        }
+    }
+
+    goToSlide(index) {
+        this.currentSlide = index;
+        this.updateSlider();
+        this.updateIndicators();
+        this.resetAutoSlide();
+    }
+
+    nextSlide() {
+        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        this.updateSlider();
+        this.updateIndicators();
+    }
+
+    updateSlider() {
+        this.slides.forEach((slide, index) => {
+            slide.style.transform = \`translateX(\${(index - this.currentSlide) * 100}%)\`;
+        });
+    }
+
+    startAutoSlide() {
+        this.autoSlideInterval = setInterval(() => {
+            this.nextSlide();
+        }, 5000);
+    }
+
+    resetAutoSlide() {
+        clearInterval(this.autoSlideInterval);
+        this.startAutoSlide();
+    }
+}
+
+// 背景動画管理
+class VideoBackground {
+    constructor() {
+        this.videos = document.querySelectorAll('.bg-video');
+        this.init();
+    }
+
+    init() {
+        this.videos.forEach(video => {
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            
+            // モバイルでは動画を無効化
+            if (window.innerWidth < 768) {
+                video.style.display = 'none';
+            } else {
+                video.play().catch(console.log);
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new FullScreenSlider();
+    new VideoBackground();
+});
+\`\`\`
+
+## 背景動画の実装
+業界別の背景動画を自動配置：
+
+\`\`\`html
+<!-- 各スライドの構造例 -->
+<div class="hero-slide relative h-screen flex items-center justify-center overflow-hidden">
+    <!-- 背景動画 -->
+    <video class="bg-video absolute inset-0 w-full h-full object-cover" 
+           autoplay muted loop playsinline>
+        <source src="https://player.vimeo.com/external/xxx.mp4" type="video/mp4">
+    </video>
+    
+    <!-- モバイル用背景画像 -->
+    <div class="md:hidden absolute inset-0 bg-cover bg-center" 
+         style="background-image: url('背景画像URL')"></div>
+    
+    <!-- オーバーレイ -->
+    <div class="absolute inset-0 bg-black/40"></div>
+    
+    <!-- コンテンツ -->
+    <div class="relative z-10 text-center text-white px-4">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6">質問テキスト</h1>
+        <p class="text-lg md:text-xl mb-8">説明テキスト</p>
+        <button class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full">
+            回答する
+        </button>
+    </div>
+</div>
+\`\`\`
+
 ## 実装要件
-- レスポンシブデザイン（モバイル・タブレット・デスクトップ対応）
-- モダンなHTML5/CSS3を使用
-- 指定されたカラーパレットを効果的に活用
-- 指定されたフォントでタイポグラフィを美しく表現
-- ${kit.industry}業界らしいコンテンツとレイアウト
-- Google Fonts APIを使用してフォントを読み込み
-- CSSカスタムプロパティ（CSS変数）を活用
-- 無料画像が自動で隙間なく配置される機能を実装
-- 画像読み込み中のプレースホルダー表示
+- **Tailwind CSS** ベースの完全レスポンシブデザイン
+- フル画面（100vh）ファーストビュースライダー
+- 業界別3パターンの質問表示
+- 背景動画 + モバイル静止画フォールバック
+- 自動スライド（5秒）+ 手動操作
+- スワイプ操作対応（モバイル）
+- 指定カラーパレットのTailwind CSS統合
+- 指定フォントでのタイポグラフィ
+- ${kit.industry}業界特化のコンテンツ
+- 無料画像・動画の自動配置機能
 
 # 必要なファイル
-- index.html
-- styles.css
-- script.js（画像自動読み込み機能含む）
+- index.html（Tailwind CDN含む）
+- script.js（スライダー + 画像/動画読み込み機能）
+- tailwind.config.js（カスタムカラー設定）
 
 # 実装例
-## CSS変数の設定
-\`\`\`css
-:root {
-  --primary-color: ${kit.color_palette[0]};
-  --secondary-color: ${kit.color_palette[1]};
-  --accent-color: ${kit.color_palette[2]};
-  --text-color: ${kit.color_palette[3]};
-  --heading-font: '${kit.fonts.heading}', sans-serif;
-  --body-font: '${kit.fonts.body}', sans-serif;
-}
 
-/* 画像読み込み用スタイル */
-[data-auto-image] {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: opacity 0.5s ease;
-}
-
-[data-auto-bg-image] {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+## Tailwind Config（カスタムカラー設定）
+\`\`\`javascript
+// tailwind.config.js
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        primary: '${kit.color_palette[0]}',
+        secondary: '${kit.color_palette[1]}',
+        accent: '${kit.color_palette[2]}',
+        textcolor: '${kit.color_palette[3]}'
+      },
+      fontFamily: {
+        heading: ['${kit.fonts.heading}', 'sans-serif'],
+        body: ['${kit.fonts.body}', 'sans-serif']
+      }
+    }
+  },
+  plugins: []
 }
 \`\`\`
 
-## Google Fonts読み込み
+## HTMLテンプレート構造
 \`\`\`html
-<link href="https://fonts.googleapis.com/css2?family=${kit.fonts.heading.replace(/\s/g, '+')}:wght@400;600;700&family=${kit.fonts.body.replace(/\s/g, '+')}:wght@400;500&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${kit.industry}サイト</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=${kit.fonts.heading.replace(/\s/g, '+')}:wght@400;600;700&family=${kit.fonts.body.replace(/\s/g, '+')}:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwindカスタム設定 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '${kit.color_palette[0]}',
+                        secondary: '${kit.color_palette[1]}',
+                        accent: '${kit.color_palette[2]}',
+                        textcolor: '${kit.color_palette[3]}'
+                    },
+                    fontFamily: {
+                        heading: ['${kit.fonts.heading}', 'sans-serif'],
+                        body: ['${kit.fonts.body}', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body text-textcolor">
+    <!-- フル画面スライダーセクション -->
+    <section class="hero-slider relative h-screen overflow-hidden">
+        
+        <!-- スライド1 -->
+        <div class="hero-slide absolute inset-0 flex items-center justify-center">
+            <video class="bg-video absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline>
+                <source data-auto-video data-video-keyword="${keywords} office" type="video/mp4">
+            </video>
+            <div class="md:hidden absolute inset-0 bg-cover bg-center" data-auto-bg-image data-image-keyword="${keywords}"></div>
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative z-10 text-center text-white px-4 max-w-4xl">
+                <h1 class="font-heading text-4xl md:text-6xl font-bold mb-6">
+                    ${kit.industry}事業で一番大切にしていることは何ですか？
+                </h1>
+                <p class="text-lg md:text-xl mb-8 font-body">
+                    あなたの事業の核となる価値観をお聞かせください
+                </p>
+                <button class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-full font-semibold transition-all">
+                    回答する
+                </button>
+            </div>
+        </div>
+        
+        <!-- スライド2, 3も同様の構造 -->
+        
+        <!-- スライダーコントロール -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+            <div class="slide-indicators flex space-x-3"></div>
+        </div>
+        
+        <!-- ナビゲーション矢印 -->
+        <button class="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 text-white/70 hover:text-white text-3xl">
+            ←
+        </button>
+        <button class="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 text-white/70 hover:text-white text-3xl">
+            →
+        </button>
+    </section>
+    
+    <!-- メインコンテンツ -->
+    <main class="bg-white">
+        <!-- セクション例 -->
+        <section class="py-16 px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-center mb-12 text-primary">
+                    ${kit.industry}のプロフェッショナルサービス
+                </h2>
+                <!-- コンテンツ -->
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+\`\`\`
+
+## 背景動画自動読み込み機能
+\`\`\`javascript
+// 背景動画の自動読み込み機能拡張
+class VideoLoader extends ImageLoader {
+    constructor() {
+        super();
+        this.videoKeywords = '${keywords}';
+    }
+
+    async loadVideos() {
+        try {
+            const videoElements = document.querySelectorAll('[data-auto-video]');
+            
+            for (let i = 0; i < videoElements.length; i++) {
+                const videoElement = videoElements[i];
+                const customKeyword = videoElement.dataset.videoKeyword || this.videoKeywords;
+                
+                // Pixabay/Pexels APIから動画を取得
+                const videoUrl = await this.fetchFreeVideo(customKeyword, i);
+                
+                if (videoUrl) {
+                    videoElement.src = videoUrl;
+                    videoElement.load();
+                }
+            }
+        } catch (error) {
+            console.log('動画の読み込みに失敗しました:', error);
+        }
+    }
+
+    async fetchFreeVideo(keyword, index = 0) {
+        try {
+            // Pixabay Video API (無料)
+            const response = await fetch(\`https://pixabay.com/api/videos/?key=YOUR_PIXABAY_KEY&q=\${encodeURIComponent(keyword)}&category=business&per_page=3\`);
+            const data = await response.json();
+            return data.hits[index]?.videos?.medium?.url || null;
+        } catch (error) {
+            // フォールバック: 静止画を使用
+            return null;
+        }
+    }
+}
 \`\`\`
 
 ## 使用手順
-1. Unsplash（https://unsplash.com/developers）でAPIキーを無料取得
-2. JavaScript内の 'YOUR_UNSPLASH_ACCESS_KEY' を実際のAPIキーに置き換え
-3. 画像を配置したい場所に data-auto-image 属性を追加
-4. カスタムキーワードが必要な場合は data-image-keyword 属性を指定
+1. **Unsplash API**: https://unsplash.com/developers でAPIキーを無料取得
+2. **Pixabay API**: https://pixabay.com/api/docs/ で動画APIキーを無料取得  
+3. JavaScript内のAPIキーを実際のキーに置き換え
+4. 画像配置: data-auto-image 属性を追加
+5. 動画配置: data-auto-video 属性を追加
+6. カスタムキーワード: data-image-keyword / data-video-keyword 属性で指定
 
-完全に動作し、画像が自動で隙間なく配置されるWebサイトを作成してください。`;
+## 特徴
+✅ **Tailwind CSS** 完全ベース
+✅ **フル画面スライダー** (100vh) 
+✅ **3パターンの質問** 業界別カスタマイズ
+✅ **背景動画** + モバイル静止画フォールバック
+✅ **自動スライド** (5秒) + 手動操作
+✅ **スワイプ対応** モバイル最適化
+✅ **無料画像・動画** 自動配置
+✅ **レスポンシブ** 完全対応
+
+完全に動作し、Tailwind CSSベースでフル画面スライダー・背景動画・3パターンの質問が実装されたモダンなWebサイトを作成してください。`;
     }
 
     copyPromptToClipboard(button, prompt) {
