@@ -401,11 +401,53 @@ body {
     color: #212529;
 }
 
-/* 人気度バッジ */
-.popularity-badge {
+/* コピーボタン（カード右上） */
+.copy-kit-button {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.copy-kit-button:hover {
+    background: #5a6fd8;
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.copy-kit-button:active {
+    transform: scale(0.95);
+}
+
+.copy-kit-button.copied {
+    background: #28a745;
+    animation: pulse-success 0.6s ease;
+}
+
+@keyframes pulse-success {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* 人気度バッジ（位置調整） */
+.popularity-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 3rem;
     padding: 0.25rem 0.5rem;
     border-radius: 12px;
     font-size: 0.7rem;

@@ -571,9 +571,28 @@ class WebDesignKitApp {
 
         // カードのクリックイベントを追加
         kitGrid.querySelectorAll('.kit-card').forEach((card, index) => {
-            card.addEventListener('click', async () => {
+            card.addEventListener('click', async (e) => {
+                // コピーボタンがクリックされた場合はモーダルを開かない
+                if (e.target.classList.contains('copy-kit-button')) {
+                    return;
+                }
                 const kit = currentItems[index];
                 await this.showKitDetails(kit);
+            });
+        });
+
+        // コピーボタンのイベントリスナーを追加
+        kitGrid.querySelectorAll('.copy-kit-button').forEach((button) => {
+            button.addEventListener('click', async (e) => {
+                e.stopPropagation(); // カードクリックイベントを防ぐ
+                
+                const kitId = button.dataset.kitId;
+                const kit = currentItems.find(k => k.id.toString() === kitId);
+                
+                if (kit) {
+                    const prompt = this.generateClaudeCodePrompt(kit);
+                    await this.copyPromptToClipboard(button, prompt);
+                }
             });
         });
 
@@ -614,6 +633,9 @@ class WebDesignKitApp {
                     <div class="card-id">KIT #${kit.id}</div>
                     <div class="card-industry">${kit.industry}</div>
                     ${popularityBadge}
+                    <button class="copy-kit-button" data-kit-id="${kit.id}" title="プロンプトをコピー">
+                        📋
+                    </button>
                 </div>
                 <div class="color-palette">
                     ${colorSwatches}
@@ -2107,26 +2129,83 @@ Disallow: /private/
 完全にSEO最適化され、Tailwind CSSベースでフル画面スライダー・背景動画・3パターンの質問が実装されたモダンなWebサイトを作成してください。`;
     }
 
-    copyPromptToClipboard(button, prompt) {
-        navigator.clipboard.writeText(prompt).then(() => {
-            const originalText = button.textContent;
-            button.textContent = '✅ コピー完了!';
-            button.style.background = '#28a745';
+    async copyPromptToClipboard(button, prompt) {
+        try {
+            await navigator.clipboard.writeText(prompt);
             
+            // 成功時のフィードバック
+            const originalContent = button.innerHTML;
+            const originalClass = button.className;
+            
+            button.innerHTML = '✅';
+            button.classList.add('copied');
+            
+            // 2秒後に元に戻す
             setTimeout(() => {
-                button.textContent = originalText;
-                button.style.background = '';
+                button.innerHTML = originalContent;
+                button.className = originalClass;
             }, 2000);
-        }).catch(err => {
+            
+            // 成功通知を表示
+            this.showNotification('プロンプトをクリップボードにコピーしました！', 'success');
+            
+        } catch (err) {
             console.error('コピーに失敗しました:', err);
-            button.textContent = '❌ コピー失敗';
+            
+            // 失敗時のフィードバック
+            const originalContent = button.innerHTML;
+            const originalClass = button.className;
+            
+            button.innerHTML = '❌';
             button.style.background = '#dc3545';
             
             setTimeout(() => {
-                button.textContent = '📋 Claude Codeで使用';
+                button.innerHTML = originalContent;
+                button.className = originalClass;
                 button.style.background = '';
             }, 2000);
+            
+            // エラー通知を表示
+            this.showNotification('コピーに失敗しました。ブラウザがクリップボードアクセスを許可していない可能性があります。', 'error');
+        }
+    }
+
+    showNotification(message, type = 'success') {
+        // 通知要素を作成
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#28a745' : '#dc3545'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 300px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // アニメーション表示
+        requestAnimationFrame(() => {
+            notification.style.transform = 'translateX(0)';
         });
+        
+        // 3秒後に削除
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 
     async showKitDetails(kit) {
@@ -2518,9 +2597,9 @@ Disallow: /private/
         // プロンプトコピーボタンのイベントリスナーを設定
         const copyPromptBtn = modal.querySelector('.copy-prompt');
         if (copyPromptBtn) {
-            copyPromptBtn.addEventListener('click', () => {
+            copyPromptBtn.addEventListener('click', async () => {
                 const prompt = this.generateClaudeCodePrompt(kit);
-                this.copyPromptToClipboard(copyPromptBtn, prompt);
+                await this.copyPromptToClipboard(copyPromptBtn, prompt);
             });
         }
 
