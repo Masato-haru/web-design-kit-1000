@@ -4,6 +4,7 @@ class WebDesignKitApp {
         this.filteredData = [];
         this.currentPage = 1;
         this.itemsPerPage = 24;
+        this.currentSiteType = 'corporate';
         
         this.initializeApp();
     }
@@ -25,6 +26,9 @@ class WebDesignKitApp {
             // 人気フォントの優先表示設定
             this.setupPopularFonts();
             
+            // サイトタイプ設定
+            this.setupSiteTypes();
+            
             // 人気度スコア計算後に再ソート
             this.sortByPopularity();
             
@@ -33,6 +37,9 @@ class WebDesignKitApp {
             
             this.populateIndustryFilter();
             console.log('フィルター設定完了');
+            
+            // サイトタイプの初期表示を更新
+            this.updateSiteTypeDescription();
             
             await this.renderKits();
             console.log('初期表示完了');
@@ -107,6 +114,105 @@ class WebDesignKitApp {
         return score;
     }
 
+    setupSiteTypes() {
+        // サイトタイプ別の説明とプロンプト修正
+        this.siteTypes = {
+            corporate: {
+                name: 'コーポレートサイト',
+                description: 'プロフェッショナルで信頼感のあるデザインが重要なビジネスサイト',
+                promptModifier: '企業の信頼性と専門性を表現する、プロフェッショナルで清潔感のあるコーポレートサイトのデザインで、'
+            },
+            lp: {
+                name: 'ランディングページ',
+                description: 'コンバージョンを重視した訴求力の高いシングルページサイト',
+                promptModifier: `売上を最大化するLP黄金構成（9ステップ）とPASBONA（パソナ）の法則に基づいたランディングページを作成してください。
+
+【必須構成要素（上から順番に配置）】
+
+1. **ファーストビュー**
+   - キャッチコピー: ターゲットの悩みに「これは私のことだ！」と刺さり、ベネフィット（商品から得られる未来）を簡潔に表現
+   - メインビジュアル: 商品・サービス利用後の理想の未来をイメージできる画像
+   - 権威付け/実績: 「顧客満足度98%」「〇〇受賞」「利用者数No.1」など信頼性を示す情報
+   - CTAボタン: 「今すぐ試す」「無料で資料請求」など最初の行動喚起
+
+2. **共感・問題提起**
+   - 「こんなお悩みありませんか？」でターゲットの具体的な悩み・不満を箇条書きリスト化
+   - 自分事化させ、続きを読む動機を創出
+
+3. **解決策の提示とベネフィット**
+   - 「その悩み、この商品が解決します！」と宣言
+   - 商品の特徴ではなく、それによって得られるベネフィットを強く訴求
+
+4. **お客様の声・導入事例**
+   - 購入検討者に近い属性の顧客の声（写真付き、手書き、具体的エピソード）
+   - BtoBの場合は具体的な導入事例と担当者コメント
+
+5. **商品の詳細説明**
+   - ベネフィットの根拠となる商品特徴、成分、他社比較（優位性）
+   - 図や表を用いた分かりやすい解説
+   - 専門家推薦やメディア掲載実績
+
+6. **開発ストーリー・想い**
+   - 「なぜこの商品を開発したのか」の背景と開発者の苦労
+   - 商品に込めた想いで感情的共感と安心感を醸成
+
+7. **よくある質問（FAQ）**
+   - 価格、配送、解約方法、使い方など購入前の疑問をQ&A形式で解消
+   - 購入ハードルを下げる先回り対応
+
+8. **オファー（特典・保証）**
+   - 価格提示とその正当性
+   - 「初回限定50%OFF」「今なら〇〇プレゼント」「30日間全額返金保証」など
+   - 行動リスクを限りなくゼロに近づける魅力的提案
+
+9. **クロージング（最後のCTA）**
+   - 商品ベネフィットの要約と購入促進
+   - 目立つCTAボタンを複数配置、申し込みフォームと一体化
+
+【PASBONAの法則を適用】
+Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決策）→ Benefit（利益）→ Offer（提案）→ Narrow down（絞り込み・限定性）→ Action（行動喚起）
+
+【デザイン要件】
+- 縦長の一枚完結型レイアウト
+- インパクトのあるビジュアルデザイン
+- 行動を促すコンバージョン最適化デザイン
+- 読み進めやすいストーリー性のある構成
+
+この構成に基づいて、`
+            },
+            ecommerce: {
+                name: 'ECサイト',
+                description: '商品の魅力を伝え、購買意欲を高めるオンラインショップ',
+                promptModifier: '商品の魅力を最大限に伝え、購買体験を向上させるECサイトのデザインで、'
+            },
+            portfolio: {
+                name: 'ポートフォリオ',
+                description: 'クリエイティブな作品や実績を効果的に見せるサイト',
+                promptModifier: 'クリエイティブな作品を魅力的に見せる、洗練されたポートフォリオサイトのデザインで、'
+            },
+            blog: {
+                name: 'ブログ',
+                description: '読みやすく継続的なコンテンツ発信に適したサイト',
+                promptModifier: '読みやすさと継続的な更新に配慮した、親しみやすいブログサイトのデザインで、'
+            },
+            restaurant: {
+                name: 'レストラン',
+                description: '料理の美味しさと店舗の雰囲気を伝える飲食店サイト',
+                promptModifier: '料理の美味しさと店舗の温かい雰囲気を伝える、食欲をそそるレストランサイトのデザインで、'
+            },
+            clinic: {
+                name: 'クリニック',
+                description: '安心感と清潔感を重視した医療機関のサイト',
+                promptModifier: '患者の安心感を第一に、清潔で信頼できる医療機関のサイトデザインで、'
+            },
+            salon: {
+                name: 'サロン',
+                description: '美しさとリラックス感を演出する美容・癒し系サイト',
+                promptModifier: '美しさとリラクゼーションを演出する、上質で落ち着いたサロンサイトのデザインで、'
+            }
+        };
+    }
+
     sortByPopularity() {
         // 人気度順でソート（高い順）
         this.filteredData.sort((a, b) => {
@@ -178,6 +284,14 @@ class WebDesignKitApp {
         const industryFilter = document.getElementById('industryFilter');
         industryFilter.addEventListener('change', () => {
             this.filterData();
+        });
+
+        // サイトタイプセレクター
+        const siteTypeSelector = document.getElementById('siteTypeSelector');
+        siteTypeSelector.addEventListener('change', (e) => {
+            this.currentSiteType = e.target.value;
+            this.updateSiteTypeDescription();
+            this.updatePromptsForSiteType();
         });
 
         // カラーフィルター
@@ -292,8 +406,38 @@ class WebDesignKitApp {
         });
     }
 
+    updateSiteTypeDescription() {
+        const descriptionElement = document.getElementById('siteTypeDescription');
+        if (descriptionElement && this.siteTypes[this.currentSiteType]) {
+            descriptionElement.innerHTML = `<p>${this.siteTypes[this.currentSiteType].description}</p>`;
+        }
+    }
+
+    updatePromptsForSiteType() {
+        // 表示中のKITカードのプロンプトを更新
+        const kitCards = document.querySelectorAll('.kit-card');
+        kitCards.forEach(card => {
+            const kitId = parseInt(card.dataset.kitId);
+            const kit = this.kitData.find(k => k.id === kitId);
+            if (kit) {
+                const promptElement = card.querySelector('.prompt-text');
+                if (promptElement) {
+                    promptElement.textContent = this.getModifiedPrompt(kit);
+                }
+            }
+        });
+    }
+
+    getModifiedPrompt(kit) {
+        const siteType = this.siteTypes[this.currentSiteType];
+        if (!siteType) return kit.vibe_coding_prompt;
+        
+        // 元のプロンプトの先頭にサイトタイプ特有の修正を追加
+        return siteType.promptModifier + kit.vibe_coding_prompt;
+    }
+
     async filterData() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
         const selectedIndustry = document.getElementById('industryFilter').value;
         
         // 選択されたカラーフィルターを取得
@@ -301,11 +445,26 @@ class WebDesignKitApp {
             .map(checkbox => checkbox.value);
 
         this.filteredData = this.kitData.filter(kit => {
-            const matchesSearch = !searchTerm || 
-                kit.industry.toLowerCase().includes(searchTerm) ||
-                kit.fonts.heading.toLowerCase().includes(searchTerm) ||
-                kit.fonts.body.toLowerCase().includes(searchTerm) ||
-                kit.vibe_coding_prompt.toLowerCase().includes(searchTerm);
+            // 検索条件のチェック
+            let matchesSearch = true;
+            if (searchTerm) {
+                // 数値のみの場合は、KIT IDの完全一致と部分一致を優先
+                if (/^\d+$/.test(searchTerm)) {
+                    const searchNum = parseInt(searchTerm);
+                    matchesSearch = kit.id === searchNum || kit.id.toString().includes(searchTerm);
+                } else {
+                    // その他のキーワード検索
+                    matchesSearch = 
+                        kit.industry.toLowerCase().includes(searchTerm) ||
+                        kit.fonts.heading.toLowerCase().includes(searchTerm) ||
+                        kit.fonts.body.toLowerCase().includes(searchTerm) ||
+                        kit.vibe_coding_prompt.toLowerCase().includes(searchTerm) ||
+                        kit.id.toString().includes(searchTerm) ||
+                        `kit${kit.id}`.toLowerCase().includes(searchTerm) ||
+                        `kit #${kit.id}`.toLowerCase().includes(searchTerm) ||
+                        `#${kit.id}`.includes(searchTerm);
+                }
+            }
 
             const matchesIndustry = !selectedIndustry || kit.industry === selectedIndustry;
 
@@ -628,7 +787,7 @@ class WebDesignKitApp {
         const popularityBadge = this.getPopularityBadge(kit);
 
         return `
-            <div class="kit-card" data-id="${kit.id}">
+            <div class="kit-card" data-id="${kit.id}" data-kit-id="${kit.id}">
                 <div class="card-header">
                     <div class="card-id">KIT #${kit.id}</div>
                     <div class="card-industry">${kit.industry}</div>
@@ -659,7 +818,7 @@ class WebDesignKitApp {
                     </div>
                 </div>
                 <div class="prompt-preview">
-                    <div class="prompt-text">${kit.vibe_coding_prompt}</div>
+                    <div class="prompt-text">${this.getModifiedPrompt(kit)}</div>
                 </div>
             </div>
         `;

@@ -43,10 +43,36 @@
             </div>
             
             <div class="sidebar-content">
+                <!-- サイトタイプ選択 -->
+                <div class="filter-group">
+                    <h4>サイトタイプ</h4>
+                    <div class="site-type-selector">
+                        <select id="siteTypeSelector" class="site-type-select">
+                            <option value="corporate">コーポレートサイト</option>
+                            <option value="lp">ランディングページ</option>
+                            <option value="ecommerce">ECサイト</option>
+                            <option value="portfolio">ポートフォリオ</option>
+                            <option value="blog">ブログ</option>
+                            <option value="restaurant">レストラン</option>
+                            <option value="clinic">クリニック</option>
+                            <option value="salon">サロン</option>
+                        </select>
+                    </div>
+                    <div class="site-type-description" id="siteTypeDescription">
+                        <p>プロフェッショナルで信頼感のあるデザインが重要なビジネスサイト</p>
+                    </div>
+                </div>
+                
                 <!-- 検索・基本フィルター -->
                 <div class="filter-group">
+                    <h4>検索</h4>
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="キーワードで検索..." class="search-input">
+                        <input type="text" id="searchInput" placeholder="KIT番号・業種・フォント名で検索..." class="search-input">
+                        <div class="search-help">
+                            <small class="search-examples">
+                                例: "123", "kit123", "#123", "コーポレート", "Noto Sans"
+                            </small>
+                        </div>
                     </div>
                     <div class="industry-filter">
                         <label for="industryFilter">業種</label>

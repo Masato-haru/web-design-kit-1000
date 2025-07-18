@@ -117,7 +117,8 @@ body {
 }
 
 .search-input,
-.industry-select {
+.industry-select,
+.site-type-select {
     width: 100%;
     padding: 0.75rem;
     border: 2px solid #e9ecef;
@@ -128,9 +129,21 @@ body {
 }
 
 .search-input:focus,
-.industry-select:focus {
+.industry-select:focus,
+.site-type-select:focus {
     outline: none;
     border-color: #667eea;
+}
+
+.search-help {
+    margin-top: 0.5rem;
+}
+
+.search-examples {
+    color: #6c757d;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    display: block;
 }
 
 .industry-filter label {
@@ -139,6 +152,26 @@ body {
     font-weight: 500;
     color: #495057;
     margin-bottom: 0.5rem;
+}
+
+/* サイトタイプセレクター */
+.site-type-selector {
+    margin-bottom: 0.75rem;
+}
+
+.site-type-description {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.site-type-description p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #495057;
+    line-height: 1.4;
 }
 
 .sort-header {
