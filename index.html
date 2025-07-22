@@ -7,7 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20250715-1640">
+    <link rel="stylesheet" href="styles.css?v=20250722-sitemap">
+    <link rel="stylesheet" href="css/custom-kit.css?v=20250722-sitemap">
+    <link rel="stylesheet" href="css/version-display.css?v=20250722-sitemap">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <meta name="mobile-web-app-capable" content="yes">
@@ -43,6 +45,13 @@
             </div>
             
             <div class="sidebar-content">
+                <!-- カスタムKit作成 -->
+                <div class="filter-group">
+                    <button class="create-custom-kit-btn" id="createCustomKitBtn">
+                        🎨 カスタムKitを作成
+                    </button>
+                </div>
+                
                 <!-- サイトタイプ選択 -->
                 <div class="filter-group">
                     <h4>サイトタイプ</h4>
@@ -263,12 +272,65 @@
         </div>
     </div>
 
+    <!-- カスタムKit作成モーダル -->
+    <div class="custom-kit-modal" id="customKitModal">
+        <div class="custom-kit-modal-content">
+            <span class="close" id="closeCustomKitModal">&times;</span>
+            <div id="customKitModalBody">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 Web制作KIT 1000選. VibeCoding向けプロンプト付き</p>
         </div>
     </footer>
 
-    <script src="app.js?v=20250715-1640"></script>
+    <!-- バージョン表示 -->
+    <div class="version-display" id="versionDisplay">
+        <span class="version-label">v</span>
+        <span class="version-number" id="versionNumber">2.1.0</span>
+        <small class="build-date" id="buildDate">2025-01-22</small>
+    </div>
+
+    <!-- バージョン詳細情報 -->
+    <div class="version-details" id="versionDetails">
+        <button class="close-btn" id="closeVersionDetails">&times;</button>
+        <h4>📦 システム情報</h4>
+        <div class="version-item">
+            <span class="version-key">バージョン:</span>
+            <span class="version-value" id="detailVersion">2.1.0</span>
+        </div>
+        <div class="version-item">
+            <span class="version-key">ビルド日:</span>
+            <span class="version-value" id="detailBuildDate">2025-01-22</span>
+        </div>
+        <div class="version-item">
+            <span class="version-key">リビジョン:</span>
+            <span class="version-value" id="detailRevision">sitemap-feature</span>
+        </div>
+        <div class="version-item">
+            <span class="version-key">モード:</span>
+            <span class="version-value" id="detailMode">Production</span>
+        </div>
+        
+        <div class="feature-list">
+            <div class="feature-item">サイトタイプ別プロンプト最適化</div>
+            <div class="feature-item">カスタムKit作成・Twitter提案</div>
+            <div class="feature-item">サイトマップ自動生成機能</div>
+            <div class="feature-item">SEO最適化アドバイス</div>
+            <div class="feature-item">3形式対応（ビジュアル・XML・リスト）</div>
+        </div>
+    </div>
+
+    <!-- リファクタリング後のモジュラー構造 -->
+    <script type="module" src="js/app-refactored.js?v=20250722-sitemap"></script>
+    <!-- 元のapp.jsはバックアップとして保持 -->
+    <!-- <script src="app.js?v=20250715-1640"></script> -->
+
+    <!-- バージョン管理スクリプト -->
+    <script src="js/version-manager.js?v=20250722-sitemap"></script>
 </body>
 </html>

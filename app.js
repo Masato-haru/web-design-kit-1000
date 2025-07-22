@@ -276,18 +276,30 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
     setupEventListeners() {
         // 検索入力
         const searchInput = document.getElementById('searchInput');
+        if (!searchInput) {
+            console.error('searchInput要素が見つかりません');
+            return;
+        }
         searchInput.addEventListener('input', this.debounce((e) => {
             this.filterData();
         }, 300));
 
         // 業種フィルター
         const industryFilter = document.getElementById('industryFilter');
+        if (!industryFilter) {
+            console.error('industryFilter要素が見つかりません');
+            return;
+        }
         industryFilter.addEventListener('change', () => {
             this.filterData();
         });
 
         // サイトタイプセレクター
         const siteTypeSelector = document.getElementById('siteTypeSelector');
+        if (!siteTypeSelector) {
+            console.error('siteTypeSelector要素が見つかりません');
+            return;
+        }
         siteTypeSelector.addEventListener('change', (e) => {
             this.currentSiteType = e.target.value;
             this.updateSiteTypeDescription();
@@ -314,6 +326,10 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
 
         // ソートクリアボタン
         const clearSortBtn = document.getElementById('clearSortBtn');
+        if (!clearSortBtn) {
+            console.error('clearSortBtn要素が見つかりません');
+            return;
+        }
         clearSortBtn.addEventListener('click', () => {
             this.clearAllSorts();
         });
@@ -321,6 +337,11 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         // モーダル
         const modal = document.getElementById('modal');
         const closeModal = document.getElementById('closeModal');
+        
+        if (!modal || !closeModal) {
+            console.error('modal または closeModal要素が見つかりません');
+            return;
+        }
         
         closeModal.addEventListener('click', () => {
             modal.style.display = 'none';
@@ -356,6 +377,11 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         const sidebar = document.getElementById('sidebar');
         const sidebarClose = document.getElementById('sidebarClose');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (!mobileFilterToggle || !sidebar || !sidebarClose || !sidebarOverlay) {
+            console.error('サイドバー関連の要素が見つかりません');
+            return;
+        }
 
         // サイドバーを開く関数
         const openSidebar = () => {
@@ -1355,7 +1381,6 @@ input:focus, textarea:focus, select:focus {
         const bodyFont = kit.fonts.body;
         
         // カラーメトリクス取得
-        const primaryMetrics = this.getPaletteMetrics(colors);
         const colorAnalysis = this.analyzeColorPalette(colors);
         const fontAnalysis = this.analyzeFonts(headingFont, bodyFont);
         
@@ -1585,6 +1610,11 @@ input:focus, textarea:focus, select:focus {
     }
 
     generateClaudeCodePrompt(kit) {
+        // LP選択時は専用のプロンプトを生成
+        if (this.currentSiteType === 'lp') {
+            return this.generateLPPrompt(kit);
+        }
+
         const industryDescriptions = {
             "コーポレート": "信頼感のあるコーポレート企業サイト",
             "テック・IT": "モダンでテック・ITらしい革新的なWebサイト",
@@ -2326,6 +2356,43 @@ Disallow: /private/
 完全にSEO最適化され、Tailwind CSSベースでフル画面スライダー・背景動画・3パターンの質問が実装されたモダンなWebサイトを作成してください。`;
     }
 
+    generateLPPrompt(kit) {
+        // LP専用のプロンプト生成
+        const colors = kit.color_palette;
+        const lpPrompt = this.siteTypes.lp.promptModifier;
+        
+        return `${lpPrompt}
+
+# デザインキット情報
+## カラーパレット
+- プライマリカラー: ${colors[0]}
+- セカンダリカラー: ${colors[1]}  
+- アクセントカラー: ${colors[2]}
+- テキストカラー: ${colors[3]}
+
+## フォント指定
+- 見出し用フォント: ${kit.fonts.heading}
+- 本文用フォント: ${kit.fonts.body}
+
+## 技術要件
+- **フレームワーク**: HTML5, CSS3, JavaScript
+- **レスポンシブ対応**: モバイルファーストデザイン
+- **SEO最適化**: 構造化データ、OGPタグ完備
+- **パフォーマンス**: Core Web Vitals対応
+
+## ターゲット業界
+${kit.industry}業界向けの専門的なランディングページとして設計してください。
+
+## 重要なガイドライン
+- 各セクションは明確に区切り、ユーザーの視線を自然に誘導
+- CTAボタンは目立つ色（プライマリカラー）で統一
+- 読み込み速度を重視した軽量な実装
+- A/Bテストが可能な柔軟な構造
+- コンバージョン率最適化を意識したUX設計
+
+完全に機能するランディングページを作成してください。`;
+    }
+
     async copyPromptToClipboard(button, prompt) {
         try {
             await navigator.clipboard.writeText(prompt);
@@ -2946,7 +3013,7 @@ class FontManager {
             return this.loadingPromises.get(fontName);
         }
 
-        const loadingPromise = new Promise((resolve, reject) => {
+        const loadingPromise = new Promise((resolve) => {
             // Google Fonts API の URL を複数方式で試行
             const methods = [
                 // 1. CSS @import

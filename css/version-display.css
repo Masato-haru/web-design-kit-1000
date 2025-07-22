@@ -1,0 +1,216 @@
+/* バージョン表示スタイル */
+.version-display {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.version-display:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.3);
+}
+
+.version-display .version-label {
+    opacity: 0.8;
+    margin-right: 4px;
+}
+
+.version-display .version-number {
+    font-weight: 700;
+    color: #fff;
+}
+
+.version-display .build-date {
+    display: block;
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 2px;
+    text-align: center;
+}
+
+/* 詳細情報表示（クリック時） */
+.version-details {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 9998;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    min-width: 250px;
+    max-width: 350px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: none;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.version-details.show {
+    display: block;
+}
+
+.version-details h4 {
+    margin: 0 0 10px 0;
+    color: #667eea;
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+}
+
+.version-details .version-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    padding: 2px 0;
+}
+
+.version-details .version-key {
+    color: #ccc;
+}
+
+.version-details .version-value {
+    color: #fff;
+    font-weight: 600;
+}
+
+.version-details .feature-list {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.version-details .feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.version-details .feature-item::before {
+    content: "✓";
+    color: #4ade80;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.version-details .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.version-details .close-btn:hover {
+    color: #fff;
+}
+
+/* アニメーション */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .version-display {
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .version-display .build-date {
+        font-size: 9px;
+    }
+    
+    .version-details {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        min-width: auto;
+        max-width: none;
+        font-size: 10px;
+    }
+    
+    .version-details .version-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .version-display {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .version-details {
+        background: rgba(0, 0, 0, 0.95);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* 非表示状態 */
+.version-display.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8) translateY(-10px);
+}
+
+/* 開発モード表示 */
+.version-display.dev-mode {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    animation: pulse 2s infinite;
+}
+
+.version-display.dev-mode::before {
+    content: "🚧";
+    margin-right: 4px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
