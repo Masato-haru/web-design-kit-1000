@@ -450,9 +450,9 @@ class UIComponents {
 
     // 結果数の表示
     displayResultCount(filteredCount, totalCount) {
-        const resultElement = Utils.getElementById('result-count');
+        const resultElement = Utils.getElementById('resultsCount');
         if (resultElement) {
-            resultElement.textContent = `${filteredCount} / ${totalCount} 件`;
+            resultElement.textContent = `${filteredCount}`;
         }
     }
 }

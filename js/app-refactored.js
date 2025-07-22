@@ -124,8 +124,11 @@ class WebDesignKitApp {
 
     // キットの描画
     async renderKits() {
-        const container = Utils.getElementById('kits-container');
-        if (!container) return;
+        const container = Utils.getElementById('kitGrid');
+        if (!container) {
+            console.error('kitGridコンテナが見つかりません');
+            return;
+        }
 
         // フィルタリングとソート
         this.applyFiltersAndSort();

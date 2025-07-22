@@ -26,13 +26,15 @@ class DataManager {
     // データの読み込み
     async loadData() {
         try {
-            const response = await fetch('data/webdesign_kits.json');
+            const response = await fetch('web_design_kit_1000.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            this.kitData = data.webdesign_kits || [];
+            this.kitData = data.kit_data || data.webdesign_kits || data || [];
             this.filteredData = [...this.kitData];
+            
+            console.log('データロード成功:', this.kitData.length, '件のキット');
             
             // 人気度スコアを計算
             this.calculatePopularityScores();
