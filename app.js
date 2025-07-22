@@ -434,8 +434,9 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
 
     updateSiteTypeDescription() {
         const descriptionElement = document.getElementById('siteTypeDescription');
-        if (descriptionElement && this.siteTypes[this.currentSiteType]) {
-            descriptionElement.innerHTML = `<p>${this.siteTypes[this.currentSiteType].description}</p>`;
+        if (descriptionElement) {
+            const description = siteTypePrompts.getSiteTypeDescription(this.currentSiteType);
+            descriptionElement.innerHTML = `<p>${description}</p>`;
         }
     }
 
@@ -455,11 +456,8 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
     }
 
     getModifiedPrompt(kit) {
-        const siteType = this.siteTypes[this.currentSiteType];
-        if (!siteType) return kit.vibe_coding_prompt;
-        
-        // 元のプロンプトの先頭にサイトタイプ特有の修正を追加
-        return siteType.promptModifier + kit.vibe_coding_prompt;
+        // サイトタイプ別プロンプト機能を使用
+        return siteTypePrompts.getPrompt(this.currentSiteType, kit);
     }
 
     async filterData() {
@@ -3142,6 +3140,263 @@ class FontManager {
 
 // グローバルフォントマネージャーのインスタンス
 const fontManager = new FontManager();
+
+// サイトタイプ別プロンプトテンプレート機能
+class SiteTypePrompts {
+    constructor() {
+        this.templates = {
+            corporate: {
+                name: "コーポレートサイト",
+                description: "企業の信頼性とプロフェッショナリズムを重視したビジネスサイト"
+            },
+            lp: {
+                name: "ランディングページ", 
+                description: "コンバージョンを最大化する1ページ完結型のLP"
+            },
+            ecommerce: {
+                name: "ECサイト",
+                description: "商品の魅力を最大化し売上向上を目指すオンラインストア"
+            },
+            blog: {
+                name: "ブログサイト",
+                description: "読みやすさとSEOを重視した情報発信サイト"
+            },
+            portfolio: {
+                name: "ポートフォリオサイト",
+                description: "作品やスキルを美しく魅力的に見せるクリエイター向けサイト"
+            },
+            restaurant: {
+                name: "レストランサイト",
+                description: "美味しさを伝える飲食店向けサイト"
+            },
+            clinic: {
+                name: "クリニックサイト",
+                description: "信頼と安心感を重視した医療機関向けサイト"
+            },
+            salon: {
+                name: "サロンサイト",
+                description: "美とリラクゼーションを表現するサロン向けサイト"
+            }
+        };
+    }
+
+    getPrompt(siteType, kit) {
+        switch (siteType) {
+            case 'corporate':
+                return this.getCorporatePrompt(kit);
+            case 'lp':
+                return this.getLandingPagePrompt(kit);
+            case 'ecommerce':
+                return this.getEcommercePrompt(kit);
+            case 'blog':
+                return this.getBlogPrompt(kit);
+            case 'portfolio':
+                return this.getPortfolioPrompt(kit);
+            case 'restaurant':
+                return this.getRestaurantPrompt(kit);
+            case 'clinic':
+                return this.getClinicPrompt(kit);
+            case 'salon':
+                return this.getSalonPrompt(kit);
+            default:
+                return this.getDefaultPrompt(kit);
+        }
+    }
+
+    getCorporatePrompt(kit) {
+        return `${kit.industry}の企業サイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+技術要件:
+- HTML5, CSS3, JavaScript使用
+- レスポンシブデザイン対応
+- プロフェッショナルで信頼感のあるデザイン
+
+コーポレートサイト必須要素:
+- ヘッダー（ナビゲーション）
+- メインビジュアル
+- 事業・サービス紹介
+- 企業の強み・実績
+- 会社概要
+- お問い合わせフォーム
+- フッター
+
+${kit.industry}業界の企業として信頼される、プロフェッショナルなコーポレートサイトを作成してください。`;
+    }
+
+    getLandingPagePrompt(kit) {
+        return `${kit.industry}のランディングページを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+ランディングページ構成（PASBONA）:
+- Problem: ターゲットの問題提起
+- Agitation: 問題の深刻化
+- Solution: 解決策提示
+- Benefit: 得られるメリット
+- Objection: 反論処理
+- Narrowing: 限定性・緊急性
+- Action: 強力なCTA
+
+技術要件:
+- HTML5, CSS3, JavaScript使用
+- コンバージョン最適化
+- モバイルファースト
+- 高速読み込み
+
+${kit.industry}業界で結果を出すランディングページを作成してください。`;
+    }
+
+    getEcommercePrompt(kit) {
+        return `${kit.industry}のECサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+ECサイト必須要素:
+- 商品カタログ・検索機能
+- ショッピングカート
+- 決済システム
+- 商品詳細ページ
+- ユーザーレビュー機能
+- マイアカウント
+
+購買意欲を高める${kit.industry}のECサイトを作成してください。`;
+    }
+
+    getBlogPrompt(kit) {
+        return `${kit.industry}のブログサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+ブログサイト必須要素:
+- 記事一覧・詳細ページ
+- カテゴリ・タグ機能
+- 検索機能
+- サイドバー
+- コメント機能
+- SEO最適化
+
+読みやすく回遊性の高い${kit.industry}のブログサイトを作成してください。`;
+    }
+
+    getPortfolioPrompt(kit) {
+        return `${kit.industry}のポートフォリオサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+ポートフォリオ必須要素:
+- 作品ギャラリー
+- プロフィール・経歴
+- スキル・サービス紹介
+- お客様の声
+- お問い合わせフォーム
+
+${kit.industry}分野での実績をアピールする魅力的なポートフォリオサイトを作成してください。`;
+    }
+
+    getRestaurantPrompt(kit) {
+        return `${kit.industry}のレストランサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+レストラン必須要素:
+- 美味しそうな料理写真
+- メニュー表示
+- 予約システム
+- 店舗情報・アクセス
+- シェフ・お店の特徴
+
+美味しさが伝わるレストランサイトを作成してください。`;
+    }
+
+    getClinicPrompt(kit) {
+        return `${kit.industry}のクリニックサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+クリニック必須要素:
+- 清潔感のあるデザイン
+- 診療内容・専門分野
+- 医師紹介・経歴
+- 診療時間・アクセス
+- オンライン予約システム
+
+患者に信頼されるクリニックサイトを作成してください。`;
+    }
+
+    getSalonPrompt(kit) {
+        return `${kit.industry}のサロンサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+サロン必須要素:
+- 上品で洗練されたデザイン
+- サービスメニュー・料金
+- スタッフ紹介・技術力
+- ビフォー・アフター事例
+- オンライン予約システム
+
+美と癒しを提供するサロンサイトを作成してください。`;
+    }
+
+    getDefaultPrompt(kit) {
+        return `${kit.industry}のWebサイトを作成してください。
+
+デザイン要件:
+- 業種: ${kit.industry}
+- カラーパレット: ${kit.color_palette.join(', ')}
+- 見出しフォント: ${kit.fonts.heading}
+- 本文フォント: ${kit.fonts.body}
+
+技術要件:
+- HTML5, CSS3, JavaScript使用
+- レスポンシブデザイン対応
+- モダンでユーザビリティの高いデザイン
+
+上記の色とフォントを効果的に使用し、${kit.industry}業界に適した魅力的なWebサイトを作成してください。`;
+    }
+
+    getSiteTypeDescription(siteType) {
+        const template = this.templates[siteType];
+        return template ? template.description : '';
+    }
+}
+
+// グローバルサイトタイププロンプトインスタンス
+const siteTypePrompts = new SiteTypePrompts();
 
 // グローバルアプリインスタンス
 let app;
