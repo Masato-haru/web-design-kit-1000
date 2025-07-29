@@ -467,8 +467,16 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
     }
 
     getModifiedPrompt(kit) {
+        // カスタムKITの場合、カスタムプロンプトを優先使用
+        if (kit.isCustom && kit.customPrompt && kit.customPrompt.trim() !== '') {
+            return kit.customPrompt;
+        }
+        
+        // カスタムKITでサイトタイプが指定されている場合はそれを使用
+        const siteType = kit.isCustom && kit.siteType ? kit.siteType : this.currentSiteType;
+        
         // サイトタイプ別プロンプト機能を使用
-        return siteTypePrompts.getPrompt(this.currentSiteType, kit);
+        return siteTypePrompts.getPrompt(siteType, kit);
     }
 
     // カスタムKit作成機能
@@ -486,6 +494,11 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         modal.style.display = 'block';
         
         this.setupCustomKitFormEvents(editKit);
+        
+        // 初期プレースホルダーを設定
+        setTimeout(() => {
+            this.updatePromptPlaceholder();
+        }, 100);
     }
 
     hideCustomKitModal() {
@@ -500,6 +513,8 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         const kit = editKit || {
             title: '',
             industry: 'コーポレート',
+            siteType: 'corporate',
+            customPrompt: '',
             colors: {
                 primary: '#667eea',
                 secondary: '#764ba2',
@@ -531,6 +546,21 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                         <option value="教育" ${kit.industry === '教育' ? 'selected' : ''}>教育</option>
                         <option value="飲食" ${kit.industry === '飲食' ? 'selected' : ''}>飲食</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="kitSiteType">サイトタイプ</label>
+                    <select id="kitSiteType" name="siteType">
+                        <option value="corporate" ${kit.siteType === 'corporate' ? 'selected' : ''}>コーポレートサイト</option>
+                        <option value="lp" ${kit.siteType === 'lp' ? 'selected' : ''}>ランディングページ</option>
+                        <option value="ecommerce" ${kit.siteType === 'ecommerce' ? 'selected' : ''}>ECサイト</option>
+                        <option value="portfolio" ${kit.siteType === 'portfolio' ? 'selected' : ''}>ポートフォリオ</option>
+                        <option value="blog" ${kit.siteType === 'blog' ? 'selected' : ''}>ブログ</option>
+                        <option value="restaurant" ${kit.siteType === 'restaurant' ? 'selected' : ''}>レストラン</option>
+                        <option value="clinic" ${kit.siteType === 'clinic' ? 'selected' : ''}>クリニック</option>
+                        <option value="salon" ${kit.siteType === 'salon' ? 'selected' : ''}>サロン</option>
+                    </select>
+                    <small class="form-help">選択したサイトタイプに応じてデフォルトプロンプトが設定されます</small>
                 </div>
 
                 <div class="form-group">
@@ -586,6 +616,18 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="customPrompt">カスタムプロンプト</label>
+                    <textarea id="customPrompt" name="customPrompt" rows="6" placeholder="カスタムプロンプトを入力してください（空欄の場合はサイトタイプのデフォルトプロンプトを使用）">${kit.customPrompt || ''}</textarea>
+                    <small class="form-help">
+                        このプロンプトがKITカードに表示されます。空欄の場合、選択したサイトタイプの標準プロンプトが使用されます。
+                    </small>
+                    <div class="prompt-actions">
+                        <button type="button" id="loadDefaultPrompt" class="btn btn-secondary btn-small">デフォルトプロンプトを読み込み</button>
+                        <button type="button" id="clearPrompt" class="btn btn-secondary btn-small">クリア</button>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" id="previewKit" class="btn btn-secondary">プレビュー</button>
                     <button type="submit" class="btn btn-primary">${isEdit ? '更新' : '作成'}</button>
@@ -611,6 +653,33 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                 }
             });
         });
+
+        // サイトタイプ変更時にプロンプト例を更新
+        const siteTypeSelect = document.getElementById('kitSiteType');
+        if (siteTypeSelect) {
+            siteTypeSelect.addEventListener('change', () => {
+                this.updatePromptPlaceholder();
+            });
+        }
+
+        // デフォルトプロンプト読み込みボタン
+        const loadDefaultPromptBtn = document.getElementById('loadDefaultPrompt');
+        if (loadDefaultPromptBtn) {
+            loadDefaultPromptBtn.addEventListener('click', () => {
+                this.loadDefaultPrompt();
+            });
+        }
+
+        // プロンプトクリアボタン
+        const clearPromptBtn = document.getElementById('clearPrompt');
+        if (clearPromptBtn) {
+            clearPromptBtn.addEventListener('click', () => {
+                const promptTextarea = document.getElementById('customPrompt');
+                if (promptTextarea) {
+                    promptTextarea.value = '';
+                }
+            });
+        }
 
         // プレビューボタン
         const previewBtn = document.getElementById('previewKit');
@@ -644,6 +713,52 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                 this.hideCustomKitModal();
             });
         }
+    }
+
+    updatePromptPlaceholder() {
+        const siteTypeSelect = document.getElementById('kitSiteType');
+        const promptTextarea = document.getElementById('customPrompt');
+        
+        if (!siteTypeSelect || !promptTextarea) return;
+        
+        const selectedSiteType = siteTypeSelect.value;
+        const siteTypeNames = {
+            'corporate': 'コーポレートサイト',
+            'lp': 'ランディングページ',
+            'ecommerce': 'ECサイト',
+            'portfolio': 'ポートフォリオ',
+            'blog': 'ブログ',
+            'restaurant': 'レストラン',
+            'clinic': 'クリニック',
+            'salon': 'サロン'
+        };
+        
+        const typeName = siteTypeNames[selectedSiteType] || 'Webサイト';
+        promptTextarea.placeholder = `${typeName}のプロンプトを入力してください（空欄の場合はデフォルトプロンプトを使用）`;
+    }
+
+    loadDefaultPrompt() {
+        const siteTypeSelect = document.getElementById('kitSiteType');
+        const promptTextarea = document.getElementById('customPrompt');
+        const industrySelect = document.getElementById('kitIndustry');
+        
+        if (!siteTypeSelect || !promptTextarea || !industrySelect) return;
+        
+        const selectedSiteType = siteTypeSelect.value;
+        const selectedIndustry = industrySelect.value;
+        
+        // 仮のキットオブジェクトを作成してデフォルトプロンプトを取得
+        const tempKit = {
+            industry: selectedIndustry,
+            color_palette: ['#667eea', '#764ba2', '#f093fb', '#333333', '#ffffff'],
+            fonts: {
+                heading: 'Noto Sans JP',
+                body: 'Noto Sans JP'
+            }
+        };
+        
+        const defaultPrompt = siteTypePrompts.getPrompt(selectedSiteType, tempKit);
+        promptTextarea.value = defaultPrompt;
     }
 
     showKitPreview() {
@@ -716,6 +831,8 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
             id: editKit ? editKit.id : 'custom_' + Date.now(),
             title: formData.get('title'),
             industry: formData.get('industry'),
+            siteType: formData.get('siteType'),
+            customPrompt: formData.get('customPrompt'),
             color_palette: [
                 formData.get('primaryColor'),
                 formData.get('secondaryColor'),
