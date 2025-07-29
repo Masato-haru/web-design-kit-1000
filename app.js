@@ -576,28 +576,53 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                     <div class="color-palette-section">
                         <div class="color-input-group">
                             <label for="primaryColor">メインカラー</label>
-                            <input type="color" id="primaryColor" name="primaryColor" value="${kit.colors.primary}">
-                            <span class="color-value">${kit.colors.primary}</span>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="primaryColor" name="primaryColor" value="${kit.colors.primary}">
+                                <div class="color-preview" style="background-color: ${kit.colors.primary}"></div>
+                                <span class="color-value">${kit.colors.primary}</span>
+                            </div>
                         </div>
                         <div class="color-input-group">
                             <label for="secondaryColor">サブカラー</label>
-                            <input type="color" id="secondaryColor" name="secondaryColor" value="${kit.colors.secondary}">
-                            <span class="color-value">${kit.colors.secondary}</span>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="secondaryColor" name="secondaryColor" value="${kit.colors.secondary}">
+                                <div class="color-preview" style="background-color: ${kit.colors.secondary}"></div>
+                                <span class="color-value">${kit.colors.secondary}</span>
+                            </div>
                         </div>
                         <div class="color-input-group">
                             <label for="accentColor">アクセントカラー</label>
-                            <input type="color" id="accentColor" name="accentColor" value="${kit.colors.accent}">
-                            <span class="color-value">${kit.colors.accent}</span>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="accentColor" name="accentColor" value="${kit.colors.accent}">
+                                <div class="color-preview" style="background-color: ${kit.colors.accent}"></div>
+                                <span class="color-value">${kit.colors.accent}</span>
+                            </div>
                         </div>
                         <div class="color-input-group">
                             <label for="textColor">テキストカラー</label>
-                            <input type="color" id="textColor" name="textColor" value="${kit.colors.text}">
-                            <span class="color-value">${kit.colors.text}</span>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="textColor" name="textColor" value="${kit.colors.text}">
+                                <div class="color-preview" style="background-color: ${kit.colors.text}"></div>
+                                <span class="color-value">${kit.colors.text}</span>
+                            </div>
                         </div>
                         <div class="color-input-group">
                             <label for="backgroundColor">背景カラー</label>
-                            <input type="color" id="backgroundColor" name="backgroundColor" value="${kit.colors.background}">
-                            <span class="color-value">${kit.colors.background}</span>
+                            <div class="color-input-wrapper">
+                                <input type="color" id="backgroundColor" name="backgroundColor" value="${kit.colors.background}">
+                                <div class="color-preview" style="background-color: ${kit.colors.background}"></div>
+                                <span class="color-value">${kit.colors.background}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="palette-preview-section">
+                        <h5>パレットプレビュー</h5>
+                        <div class="palette-preview-bar">
+                            <div class="palette-color primary-preview" style="background-color: ${kit.colors.primary}" title="メインカラー"></div>
+                            <div class="palette-color secondary-preview" style="background-color: ${kit.colors.secondary}" title="サブカラー"></div>
+                            <div class="palette-color accent-preview" style="background-color: ${kit.colors.accent}" title="アクセントカラー"></div>
+                            <div class="palette-color text-preview" style="background-color: ${kit.colors.text}" title="テキストカラー"></div>
+                            <div class="palette-color background-preview" style="background-color: ${kit.colors.background}" title="背景カラー"></div>
                         </div>
                     </div>
                 </div>
@@ -608,9 +633,16 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                         <option value="Noto Sans JP" ${kit.fonts.heading === 'Noto Sans JP' ? 'selected' : ''}>Noto Sans JP</option>
                         <option value="Noto Serif JP" ${kit.fonts.heading === 'Noto Serif JP' ? 'selected' : ''}>Noto Serif JP</option>
                         <option value="M PLUS 1p" ${kit.fonts.heading === 'M PLUS 1p' ? 'selected' : ''}>M PLUS 1p</option>
+                        <option value="M PLUS Rounded 1c" ${kit.fonts.heading === 'M PLUS Rounded 1c' ? 'selected' : ''}>M PLUS Rounded 1c</option>
+                        <option value="Zen Kaku Gothic New" ${kit.fonts.heading === 'Zen Kaku Gothic New' ? 'selected' : ''}>Zen Kaku Gothic New</option>
                         <option value="Hiragino Sans" ${kit.fonts.heading === 'Hiragino Sans' ? 'selected' : ''}>Hiragino Sans</option>
                         <option value="Yu Gothic" ${kit.fonts.heading === 'Yu Gothic' ? 'selected' : ''}>Yu Gothic</option>
                     </select>
+                    <div class="font-preview-sample">
+                        <div class="font-sample heading-sample" style="font-family: ${fontManager.getFontFamily(kit.fonts.heading)}; font-size: 1.2rem; font-weight: 600;">
+                            見出しサンプルテキスト
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -619,9 +651,16 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                         <option value="Noto Sans JP" ${kit.fonts.body === 'Noto Sans JP' ? 'selected' : ''}>Noto Sans JP</option>
                         <option value="Noto Serif JP" ${kit.fonts.body === 'Noto Serif JP' ? 'selected' : ''}>Noto Serif JP</option>  
                         <option value="M PLUS 1p" ${kit.fonts.body === 'M PLUS 1p' ? 'selected' : ''}>M PLUS 1p</option>
+                        <option value="M PLUS Rounded 1c" ${kit.fonts.body === 'M PLUS Rounded 1c' ? 'selected' : ''}>M PLUS Rounded 1c</option>
+                        <option value="Zen Kaku Gothic New" ${kit.fonts.body === 'Zen Kaku Gothic New' ? 'selected' : ''}>Zen Kaku Gothic New</option>
                         <option value="Hiragino Sans" ${kit.fonts.body === 'Hiragino Sans' ? 'selected' : ''}>Hiragino Sans</option>
                         <option value="Source Han Sans" ${kit.fonts.body === 'Source Han Sans' ? 'selected' : ''}>Source Han Sans</option>
                     </select>
+                    <div class="font-preview-sample">
+                        <div class="font-sample body-sample" style="font-family: ${fontManager.getFontFamily(kit.fonts.body)}; font-size: 0.95rem; line-height: 1.6;">
+                            本文サンプルテキストです。このフォントでWebサイトの本文を表示します。読みやすさと美しさを重視しています。
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -655,10 +694,12 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         const colorInputs = document.querySelectorAll('#customKitForm input[type="color"]');
         colorInputs.forEach(input => {
             input.addEventListener('change', (e) => {
-                const colorValue = e.target.nextElementSibling;
-                if (colorValue) {
-                    colorValue.textContent = e.target.value;
-                }
+                this.updateColorPreview(e.target);
+            });
+            
+            // リアルタイム更新（input イベント）
+            input.addEventListener('input', (e) => {
+                this.updateColorPreview(e.target);
             });
         });
 
@@ -667,6 +708,22 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         if (siteTypeSelect) {
             siteTypeSelect.addEventListener('change', () => {
                 this.updatePromptPlaceholder();
+            });
+        }
+
+        // フォント変更時にプレビューを更新
+        const headingFontSelect = document.getElementById('headingFont');
+        const bodyFontSelect = document.getElementById('bodyFont');
+        
+        if (headingFontSelect) {
+            headingFontSelect.addEventListener('change', (e) => {
+                this.updateFontPreview('heading', e.target.value);
+            });
+        }
+        
+        if (bodyFontSelect) {
+            bodyFontSelect.addEventListener('change', (e) => {
+                this.updateFontPreview('body', e.target.value);
             });
         }
 
@@ -767,6 +824,66 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         
         const defaultPrompt = siteTypePrompts.getPrompt(selectedSiteType, tempKit);
         promptTextarea.value = defaultPrompt;
+    }
+
+    updateColorPreview(colorInput) {
+        const color = colorInput.value;
+        const wrapper = colorInput.closest('.color-input-wrapper');
+        
+        if (wrapper) {
+            // 個別のカラープレビューを更新
+            const colorPreview = wrapper.querySelector('.color-preview');
+            const colorValue = wrapper.querySelector('.color-value');
+            
+            if (colorPreview) {
+                colorPreview.style.backgroundColor = color;
+            }
+            if (colorValue) {
+                colorValue.textContent = color;
+            }
+        }
+        
+        // パレットプレビューバーを更新
+        this.updatePalettePreview();
+    }
+
+    updatePalettePreview() {
+        const primaryColor = document.getElementById('primaryColor')?.value || '#667eea';
+        const secondaryColor = document.getElementById('secondaryColor')?.value || '#764ba2';
+        const accentColor = document.getElementById('accentColor')?.value || '#f093fb';
+        const textColor = document.getElementById('textColor')?.value || '#333333';
+        const backgroundColor = document.getElementById('backgroundColor')?.value || '#ffffff';
+        
+        // パレットプレビューバーの更新
+        const primaryPreview = document.querySelector('.primary-preview');
+        const secondaryPreview = document.querySelector('.secondary-preview');
+        const accentPreview = document.querySelector('.accent-preview');
+        const textPreview = document.querySelector('.text-preview');
+        const backgroundPreview = document.querySelector('.background-preview');
+        
+        if (primaryPreview) primaryPreview.style.backgroundColor = primaryColor;
+        if (secondaryPreview) secondaryPreview.style.backgroundColor = secondaryColor;
+        if (accentPreview) accentPreview.style.backgroundColor = accentColor;
+        if (textPreview) textPreview.style.backgroundColor = textColor;
+        if (backgroundPreview) backgroundPreview.style.backgroundColor = backgroundColor;
+    }
+
+    updateFontPreview(type, fontName) {
+        if (type === 'heading') {
+            const headingSample = document.querySelector('.heading-sample');
+            if (headingSample) {
+                headingSample.style.fontFamily = fontManager.getFontFamily(fontName);
+                // フォントを事前に読み込み
+                fontManager.loadFont(fontName);
+            }
+        } else if (type === 'body') {
+            const bodySample = document.querySelector('.body-sample');
+            if (bodySample) {
+                bodySample.style.fontFamily = fontManager.getFontFamily(fontName);
+                // フォントを事前に読み込み
+                fontManager.loadFont(fontName);
+            }
+        }
     }
 
     showKitPreview() {
