@@ -23,6 +23,9 @@ class WebDesignKitApp {
             await this.loadData();
             console.log('データ読み込み完了:', this.kitData.length, '件');
             
+            // カスタムKITを読み込み
+            this.loadCustomKits();
+            
             // 人気フォントの優先表示設定
             this.setupPopularFonts();
             
@@ -280,7 +283,7 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
             console.error('searchInput要素が見つかりません');
             return;
         }
-        searchInput.addEventListener('input', this.debounce((e) => {
+        searchInput.addEventListener('input', this.debounce(() => {
             this.filterData();
         }, 300));
 
@@ -367,6 +370,14 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
                 }
             }
         });
+
+        // カスタムKit作成ボタン
+        const createCustomKitBtn = document.getElementById('createCustomKitBtn');
+        if (createCustomKitBtn) {
+            createCustomKitBtn.addEventListener('click', () => {
+                this.handleCreateCustomKit();
+            });
+        }
 
         // サイドバー制御
         this.setupSidebarControls();
@@ -458,6 +469,307 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
     getModifiedPrompt(kit) {
         // サイトタイプ別プロンプト機能を使用
         return siteTypePrompts.getPrompt(this.currentSiteType, kit);
+    }
+
+    // カスタムKit作成機能
+    handleCreateCustomKit() {
+        this.showCustomKitModal();
+    }
+
+    showCustomKitModal(editKit = null) {
+        const modal = document.getElementById('customKitModal');
+        const modalBody = document.getElementById('customKitModalBody');
+        
+        if (!modal || !modalBody) return;
+        
+        modalBody.innerHTML = this.generateCustomKitForm(editKit);
+        modal.style.display = 'block';
+        
+        this.setupCustomKitFormEvents(editKit);
+    }
+
+    hideCustomKitModal() {
+        const modal = document.getElementById('customKitModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    generateCustomKitForm(editKit = null) {
+        const isEdit = editKit !== null;
+        const kit = editKit || {
+            title: '',
+            industry: 'コーポレート',
+            colors: {
+                primary: '#667eea',
+                secondary: '#764ba2',
+                accent: '#f093fb',
+                text: '#333333',
+                background: '#ffffff'
+            },
+            fonts: {
+                heading: 'Noto Sans JP',
+                body: 'Noto Sans JP'
+            }
+        };
+
+        return `
+            <h3>${isEdit ? 'カスタムKit編集' : 'カスタムKit作成'}</h3>
+            <form id="customKitForm" class="custom-kit-form">
+                <div class="form-group">
+                    <label for="kitTitle">Kit名</label>
+                    <input type="text" id="kitTitle" name="title" value="${kit.title}" placeholder="例: モダンコーポレート" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kitIndustry">業種</label>
+                    <select id="kitIndustry" name="industry">
+                        <option value="コーポレート" ${kit.industry === 'コーポレート' ? 'selected' : ''}>コーポレート</option>
+                        <option value="テック・IT" ${kit.industry === 'テック・IT' ? 'selected' : ''}>テック・IT</option>
+                        <option value="クリエイティブ" ${kit.industry === 'クリエイティブ' ? 'selected' : ''}>クリエイティブ</option>
+                        <option value="ヘルスケア" ${kit.industry === 'ヘルスケア' ? 'selected' : ''}>ヘルスケア</option>
+                        <option value="教育" ${kit.industry === '教育' ? 'selected' : ''}>教育</option>
+                        <option value="飲食" ${kit.industry === '飲食' ? 'selected' : ''}>飲食</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>カラーパレット</label>
+                    <div class="color-palette-section">
+                        <div class="color-input-group">
+                            <label for="primaryColor">メインカラー</label>
+                            <input type="color" id="primaryColor" name="primaryColor" value="${kit.colors.primary}">
+                            <span class="color-value">${kit.colors.primary}</span>
+                        </div>
+                        <div class="color-input-group">
+                            <label for="secondaryColor">サブカラー</label>
+                            <input type="color" id="secondaryColor" name="secondaryColor" value="${kit.colors.secondary}">
+                            <span class="color-value">${kit.colors.secondary}</span>
+                        </div>
+                        <div class="color-input-group">
+                            <label for="accentColor">アクセントカラー</label>
+                            <input type="color" id="accentColor" name="accentColor" value="${kit.colors.accent}">
+                            <span class="color-value">${kit.colors.accent}</span>
+                        </div>
+                        <div class="color-input-group">
+                            <label for="textColor">テキストカラー</label>
+                            <input type="color" id="textColor" name="textColor" value="${kit.colors.text}">
+                            <span class="color-value">${kit.colors.text}</span>
+                        </div>
+                        <div class="color-input-group">
+                            <label for="backgroundColor">背景カラー</label>
+                            <input type="color" id="backgroundColor" name="backgroundColor" value="${kit.colors.background}">
+                            <span class="color-value">${kit.colors.background}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="headingFont">見出しフォント</label>
+                    <select id="headingFont" name="headingFont">
+                        <option value="Noto Sans JP" ${kit.fonts.heading === 'Noto Sans JP' ? 'selected' : ''}>Noto Sans JP</option>
+                        <option value="Noto Serif JP" ${kit.fonts.heading === 'Noto Serif JP' ? 'selected' : ''}>Noto Serif JP</option>
+                        <option value="M PLUS 1p" ${kit.fonts.heading === 'M PLUS 1p' ? 'selected' : ''}>M PLUS 1p</option>
+                        <option value="Hiragino Sans" ${kit.fonts.heading === 'Hiragino Sans' ? 'selected' : ''}>Hiragino Sans</option>
+                        <option value="Yu Gothic" ${kit.fonts.heading === 'Yu Gothic' ? 'selected' : ''}>Yu Gothic</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bodyFont">本文フォント</label>
+                    <select id="bodyFont" name="bodyFont">
+                        <option value="Noto Sans JP" ${kit.fonts.body === 'Noto Sans JP' ? 'selected' : ''}>Noto Sans JP</option>
+                        <option value="Noto Serif JP" ${kit.fonts.body === 'Noto Serif JP' ? 'selected' : ''}>Noto Serif JP</option>  
+                        <option value="M PLUS 1p" ${kit.fonts.body === 'M PLUS 1p' ? 'selected' : ''}>M PLUS 1p</option>
+                        <option value="Hiragino Sans" ${kit.fonts.body === 'Hiragino Sans' ? 'selected' : ''}>Hiragino Sans</option>
+                        <option value="Source Han Sans" ${kit.fonts.body === 'Source Han Sans' ? 'selected' : ''}>Source Han Sans</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="previewKit" class="btn btn-secondary">プレビュー</button>
+                    <button type="submit" class="btn btn-primary">${isEdit ? '更新' : '作成'}</button>
+                    <button type="button" id="cancelKit" class="btn btn-cancel">キャンセル</button>
+                </div>
+            </form>
+
+            <div id="kitPreview" class="kit-preview" style="display: none;">
+                <h4>プレビュー</h4>
+                <div class="preview-content"></div>
+            </div>
+        `;
+    }
+
+    setupCustomKitFormEvents(editKit = null) {
+        // カラー入力の変更イベント
+        const colorInputs = document.querySelectorAll('#customKitForm input[type="color"]');
+        colorInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const colorValue = e.target.nextElementSibling;
+                if (colorValue) {
+                    colorValue.textContent = e.target.value;
+                }
+            });
+        });
+
+        // プレビューボタン
+        const previewBtn = document.getElementById('previewKit');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                this.showKitPreview();
+            });
+        }
+
+        // フォーム送信
+        const form = document.getElementById('customKitForm');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveCustomKit(editKit);
+            });
+        }
+
+        // キャンセルボタン
+        const cancelBtn = document.getElementById('cancelKit');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                this.hideCustomKitModal();
+            });
+        }
+
+        // モーダル閉じるボタン
+        const closeBtn = document.getElementById('closeCustomKitModal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.hideCustomKitModal();
+            });
+        }
+    }
+
+    showKitPreview() {
+        const form = document.getElementById('customKitForm');
+        const preview = document.getElementById('kitPreview');
+        const previewContent = preview.querySelector('.preview-content');
+        
+        if (!form || !preview || !previewContent) return;
+
+        const formData = new FormData(form);
+        const kit = {
+            title: formData.get('title'),
+            industry: formData.get('industry'),
+            colors: {
+                primary: formData.get('primaryColor'),
+                secondary: formData.get('secondaryColor'),
+                accent: formData.get('accentColor'),
+                text: formData.get('textColor'),
+                background: formData.get('backgroundColor')
+            },
+            fonts: {
+                heading: formData.get('headingFont'),
+                body: formData.get('bodyFont')
+            }
+        };
+
+        previewContent.innerHTML = `
+            <div class="preview-kit-card" style="
+                background: ${kit.colors.background};
+                color: ${kit.colors.text};
+                border: 2px solid ${kit.colors.primary};
+                padding: 20px;
+                border-radius: 8px;
+            ">
+                <h3 style="
+                    font-family: '${kit.fonts.heading}', sans-serif;
+                    color: ${kit.colors.primary};
+                    margin-bottom: 10px;
+                ">${kit.title}</h3>
+                <p style="
+                    font-family: '${kit.fonts.body}', sans-serif;
+                    color: ${kit.colors.text};
+                    margin-bottom: 15px;
+                ">${kit.industry}向けのデザインKITです。</p>
+                <div class="color-palette" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="width: 30px; height: 30px; background: ${kit.colors.primary}; border-radius: 4px;" title="Primary"></div>
+                    <div style="width: 30px; height: 30px; background: ${kit.colors.secondary}; border-radius: 4px;" title="Secondary"></div>
+                    <div style="width: 30px; height: 30px; background: ${kit.colors.accent}; border-radius: 4px;" title="Accent"></div>
+                </div>
+                <button style="
+                    background: ${kit.colors.secondary};
+                    color: ${kit.colors.background};
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    font-family: '${kit.fonts.body}', sans-serif;
+                ">サンプルボタン</button>
+            </div>
+        `;
+
+        preview.style.display = 'block';
+    }
+
+    saveCustomKit(editKit = null) {
+        const form = document.getElementById('customKitForm');
+        if (!form) return;
+
+        const formData = new FormData(form);
+        const kit = {
+            id: editKit ? editKit.id : 'custom_' + Date.now(),
+            title: formData.get('title'),
+            industry: formData.get('industry'),
+            color_palette: [
+                formData.get('primaryColor'),
+                formData.get('secondaryColor'),
+                formData.get('accentColor'),
+                formData.get('textColor'),
+                formData.get('backgroundColor')
+            ],
+            fonts: {
+                heading: formData.get('headingFont'),
+                body: formData.get('bodyFont')
+            },
+            isCustom: true,
+            created: new Date().toISOString()
+        };
+
+        // カスタムKITを保存（ローカルストレージ）
+        this.saveCustomKitToStorage(kit);
+        
+        // 成功メッセージ
+        alert(`カスタムKit「${kit.title}」が${editKit ? '更新' : '作成'}されました！`);
+        
+        this.hideCustomKitModal();
+        
+        // データを再読み込みして表示を更新
+        this.loadCustomKits();
+        this.filterData();
+    }
+
+    saveCustomKitToStorage(kit) {
+        let customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        
+        if (kit.isCustom && kit.id.toString().startsWith('custom_')) {
+            // 既存のカスタムKITを更新または新規追加
+            const index = customKits.findIndex(k => k.id === kit.id);
+            if (index >= 0) {
+                customKits[index] = kit;
+            } else {
+                customKits.push(kit);
+            }
+        }
+        
+        localStorage.setItem('customKits', JSON.stringify(customKits));
+    }
+
+    loadCustomKits() {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        
+        // 既存のカスタムKITを削除
+        this.kitData = this.kitData.filter(kit => !kit.isCustom);
+        
+        // カスタムKITを追加
+        this.kitData = [...this.kitData, ...customKits];
+        
+        console.log('カスタムKIT読み込み完了:', customKits.length, '件');
     }
 
     async filterData() {
