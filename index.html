@@ -50,6 +50,9 @@
                     <button class="create-custom-kit-btn" id="createCustomKitBtn">
                         🎨 カスタムKitを作成
                     </button>
+                    <button class="manage-prompts-btn" id="managePromptsBtn">
+                        📝 プロンプト管理
+                    </button>
                 </div>
                 
                 <!-- サイトタイプ選択 -->
@@ -277,6 +280,19 @@
         <div class="custom-kit-modal-content">
             <span class="close" id="closeCustomKitModal">&times;</span>
             <div id="customKitModalBody">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- プロンプト管理モーダル -->
+    <div class="prompts-modal" id="promptsModal">
+        <div class="prompts-modal-content">
+            <div class="prompts-modal-header">
+                <h3>📝 プロンプト管理</h3>
+                <span class="close" id="closePromptsModal">&times;</span>
+            </div>
+            <div class="prompts-modal-body" id="promptsModalBody">
                 <!-- JavaScriptで動的に生成 -->
             </div>
         </div>

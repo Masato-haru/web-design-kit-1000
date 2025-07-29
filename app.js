@@ -379,6 +379,14 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
             });
         }
 
+        // プロンプト管理ボタン
+        const managePromptsBtn = document.getElementById('managePromptsBtn');
+        if (managePromptsBtn) {
+            managePromptsBtn.addEventListener('click', () => {
+                this.showPromptsModal();
+            });
+        }
+
         // サイドバー制御
         this.setupSidebarControls();
     }
@@ -887,6 +895,356 @@ Problem（問題提起）→ Agitation（煽り・共感）→ Solution（解決
         this.kitData = [...this.kitData, ...customKits];
         
         console.log('カスタムKIT読み込み完了:', customKits.length, '件');
+    }
+
+    // プロンプト管理機能
+    showPromptsModal() {
+        const modal = document.getElementById('promptsModal');
+        const modalBody = document.getElementById('promptsModalBody');
+        
+        if (!modal || !modalBody) return;
+        
+        modalBody.innerHTML = this.generatePromptsContent();
+        modal.style.display = 'block';
+        
+        this.setupPromptsModalEvents();
+    }
+
+    hidePromptsModal() {
+        const modal = document.getElementById('promptsModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    generatePromptsContent() {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        
+        if (customKits.length === 0) {
+            return `
+                <div class="no-custom-kits">
+                    <div class="no-data-message">
+                        <h4>📝 カスタムKITがありません</h4>
+                        <p>カスタムKITを作成すると、ここで管理できます。</p>
+                        <button class="btn btn-primary" id="createNewKitFromPrompts">
+                            🎨 カスタムKitを作成
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        const siteTypeNames = {
+            'corporate': 'コーポレートサイト',
+            'lp': 'ランディングページ',
+            'ecommerce': 'ECサイト',
+            'portfolio': 'ポートフォリオ',
+            'blog': 'ブログ',
+            'restaurant': 'レストラン',
+            'clinic': 'クリニック',
+            'salon': 'サロン'
+        };
+
+        const kitsList = customKits.map(kit => {
+            const hasCustomPrompt = kit.customPrompt && kit.customPrompt.trim() !== '';
+            const siteTypeName = siteTypeNames[kit.siteType] || kit.siteType;
+            const createdDate = new Date(kit.created).toLocaleDateString('ja-JP');
+
+            return `
+                <div class="custom-kit-item" data-kit-id="${kit.id}">
+                    <div class="kit-header">
+                        <div class="kit-title-section">
+                            <h4 class="kit-title">${kit.title}</h4>
+                            <div class="kit-meta">
+                                <span class="industry-tag">${kit.industry}</span>
+                                <span class="site-type-tag">${siteTypeName}</span>
+                                <span class="created-date">作成日: ${createdDate}</span>
+                            </div>
+                        </div>
+                        <div class="kit-actions">
+                            <button class="btn btn-secondary btn-small" data-action="edit" data-kit-id="${kit.id}">
+                                ✏️ 編集
+                            </button>
+                            <button class="btn btn-danger btn-small" data-action="delete" data-kit-id="${kit.id}">
+                                🗑️ 削除
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="kit-colors">
+                        <span class="color-label">カラーパレット:</span>
+                        <div class="color-palette-preview">
+                            ${kit.color_palette.map(color => 
+                                `<div class="color-dot" style="background-color: ${color}" title="${color}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="kit-fonts">
+                        <span class="font-info">見出し: ${kit.fonts.heading} | 本文: ${kit.fonts.body}</span>
+                    </div>
+                    
+                    <div class="kit-prompt-section">
+                        <div class="prompt-header">
+                            <strong>プロンプト:</strong>
+                            <span class="prompt-type-badge ${hasCustomPrompt ? 'custom' : 'default'}">
+                                ${hasCustomPrompt ? 'カスタム' : 'デフォルト'}
+                            </span>
+                        </div>
+                        <div class="prompt-content">
+                            <textarea readonly class="prompt-display">${hasCustomPrompt ? kit.customPrompt : this.getDefaultPromptForKit(kit)}</textarea>
+                        </div>
+                        <div class="prompt-actions">
+                            <button class="btn btn-secondary btn-small" data-action="copy-prompt" data-kit-id="${kit.id}">
+                                📋 コピー
+                            </button>
+                            <button class="btn btn-secondary btn-small" data-action="preview-kit" data-kit-id="${kit.id}">
+                                👁️ プレビュー
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="prompts-content">
+                <div class="prompts-header">
+                    <div class="prompts-stats">
+                        <span class="stats-item">📝 ${customKits.length} 個のカスタムKIT</span>
+                        <span class="stats-item">🎨 ${customKits.filter(k => k.customPrompt && k.customPrompt.trim() !== '').length} 個のカスタムプロンプト</span>
+                    </div>
+                    <div class="prompts-actions">
+                        <button class="btn btn-primary" id="createNewKitFromPrompts">
+                            ➕ 新しいKitを作成
+                        </button>
+                        <button class="btn btn-secondary" id="exportCustomKits">
+                            📤 エクスポート
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="custom-kits-list">
+                    ${kitsList}
+                </div>
+            </div>
+        `;
+    }
+
+    getDefaultPromptForKit(kit) {
+        const siteType = kit.siteType || 'corporate';
+        return siteTypePrompts.getPrompt(siteType, kit);
+    }
+
+    setupPromptsModalEvents() {
+        // モーダルを閉じる
+        const closeBtn = document.getElementById('closePromptsModal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.hidePromptsModal();
+            });
+        }
+
+        // 新しいKit作成
+        const createBtns = document.querySelectorAll('#createNewKitFromPrompts');
+        createBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.hidePromptsModal();
+                this.handleCreateCustomKit();
+            });
+        });
+
+        // Kit編集
+        const editBtns = document.querySelectorAll('[data-action="edit"]');
+        editBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const kitId = e.target.dataset.kitId;
+                this.editCustomKit(kitId);
+            });
+        });
+
+        // Kit削除
+        const deleteBtns = document.querySelectorAll('[data-action="delete"]');
+        deleteBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const kitId = e.target.dataset.kitId;
+                this.deleteCustomKit(kitId);
+            });
+        });
+
+        // プロンプトコピー
+        const copyBtns = document.querySelectorAll('[data-action="copy-prompt"]');
+        copyBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const kitId = e.target.dataset.kitId;
+                this.copyKitPrompt(kitId);
+            });
+        });
+
+        // Kitプレビュー
+        const previewBtns = document.querySelectorAll('[data-action="preview-kit"]');
+        previewBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const kitId = e.target.dataset.kitId;
+                this.previewCustomKit(kitId);
+            });
+        });
+
+        // エクスポート
+        const exportBtn = document.getElementById('exportCustomKits');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportCustomKits();
+            });
+        }
+    }
+
+    editCustomKit(kitId) {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        const kit = customKits.find(k => k.id === kitId);
+        
+        if (kit) {
+            this.hidePromptsModal();
+            this.showCustomKitModal(kit);
+        }
+    }
+
+    deleteCustomKit(kitId) {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        const kit = customKits.find(k => k.id === kitId);
+        
+        if (kit && confirm(`カスタムKit「${kit.title}」を削除しますか？\nこの操作は取り消せません。`)) {
+            const updatedKits = customKits.filter(k => k.id !== kitId);
+            localStorage.setItem('customKits', JSON.stringify(updatedKits));
+            
+            // データを再読み込み
+            this.loadCustomKits();
+            this.filterData();
+            
+            // モーダルの内容を更新
+            const modalBody = document.getElementById('promptsModalBody');
+            if (modalBody) {
+                modalBody.innerHTML = this.generatePromptsContent();
+                this.setupPromptsModalEvents();
+            }
+            
+            alert(`カスタムKit「${kit.title}」を削除しました。`);
+        }
+    }
+
+    copyKitPrompt(kitId) {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        const kit = customKits.find(k => k.id === kitId);
+        
+        if (kit) {
+            const prompt = kit.customPrompt && kit.customPrompt.trim() !== '' 
+                ? kit.customPrompt 
+                : this.getDefaultPromptForKit(kit);
+            
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('プロンプトをクリップボードにコピーしました！');
+            }).catch(() => {
+                alert('コピーに失敗しました。ブラウザがクリップボード機能をサポートしていない可能性があります。');
+            });
+        }
+    }
+
+    previewCustomKit(kitId) {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        const kit = customKits.find(k => k.id === kitId);
+        
+        if (kit) {
+            // プレビュー用のモーダルを表示
+            this.showKitPreviewModal(kit);
+        }
+    }
+
+    showKitPreviewModal(kit) {
+        const prompt = kit.customPrompt && kit.customPrompt.trim() !== '' 
+            ? kit.customPrompt 
+            : this.getDefaultPromptForKit(kit);
+
+        const previewHTML = `
+            <div class="kit-preview-modal">
+                <div class="kit-preview-content">
+                    <div class="preview-header">
+                        <h3>🎨 ${kit.title} - プレビュー</h3>
+                        <button class="close-preview" id="closeKitPreview">×</button>
+                    </div>
+                    <div class="preview-body">
+                        <div class="kit-info">
+                            <div class="info-row">
+                                <strong>業種:</strong> ${kit.industry}
+                            </div>
+                            <div class="info-row">
+                                <strong>サイトタイプ:</strong> ${kit.siteType}
+                            </div>
+                            <div class="info-row">
+                                <strong>見出しフォント:</strong> ${kit.fonts.heading}
+                            </div>
+                            <div class="info-row">
+                                <strong>本文フォント:</strong> ${kit.fonts.body}
+                            </div>
+                        </div>
+                        <div class="color-palette-preview">
+                            <strong>カラーパレット:</strong>
+                            <div class="colors">
+                                ${kit.color_palette.map(color => 
+                                    `<div class="color-sample" style="background-color: ${color}">
+                                        <span class="color-code">${color}</span>
+                                    </div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="prompt-preview">
+                            <strong>プロンプト:</strong>
+                            <div class="prompt-text-preview">${prompt}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // 既存のプレビューモーダルを削除
+        const existingPreview = document.querySelector('.kit-preview-modal');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+
+        // 新しいプレビューモーダルを追加
+        document.body.insertAdjacentHTML('beforeend', previewHTML);
+
+        // 閉じるイベント
+        const closeBtn = document.getElementById('closeKitPreview');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                const previewModal = document.querySelector('.kit-preview-modal');
+                if (previewModal) {
+                    previewModal.remove();
+                }
+            });
+        }
+    }
+
+    exportCustomKits() {
+        const customKits = JSON.parse(localStorage.getItem('customKits') || '[]');
+        
+        if (customKits.length === 0) {
+            alert('エクスポートするカスタムKITがありません。');
+            return;
+        }
+
+        const dataStr = JSON.stringify(customKits, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `custom-kits-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        alert(`${customKits.length}個のカスタムKITをエクスポートしました。`);
     }
 
     async filterData() {

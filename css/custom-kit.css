@@ -1,7 +1,7 @@
 /* カスタムKit作成機能のスタイル */
 
 /* カスタムKitボタン */
-.create-custom-kit-btn {
+.create-custom-kit-btn, .manage-prompts-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -10,13 +10,22 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin: 20px 0;
+    margin: 10px 0;
     font-size: 16px;
+    width: 100%;
 }
 
-.create-custom-kit-btn:hover {
+.manage-prompts-btn {
+    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+}
+
+.create-custom-kit-btn:hover, .manage-prompts-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.manage-prompts-btn:hover {
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
 }
 
 /* カスタムKitモーダル */
@@ -869,5 +878,459 @@
     
     .advice-list li::before {
         left: -16px;
+    }
+}
+
+/* プロンプト管理モーダル */
+.prompts-modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.prompts-modal-content {
+    background-color: #fefefe;
+    margin: 1% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 1200px;
+    max-height: 95vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.prompts-modal-header {
+    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.prompts-modal-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.prompts-modal-header .close {
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.prompts-modal-header .close:hover {
+    color: #f0f0f0;
+}
+
+.prompts-modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.prompts-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.prompts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+.prompts-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stats-item {
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #495057;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prompts-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.custom-kits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.custom-kit-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.custom-kit-item:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.kit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.kit-title-section {
+    flex: 1;
+}
+
+.kit-title {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.kit-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.industry-tag, .site-type-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.site-type-tag {
+    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+}
+
+.created-date {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.kit-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.kit-colors {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.color-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.color-palette-preview {
+    display: flex;
+    gap: 5px;
+}
+
+.color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.kit-fonts {
+    margin-bottom: 15px;
+}
+
+.font-info {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.kit-prompt-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.prompt-type-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.prompt-type-badge.custom {
+    background: #d4edda;
+    color: #155724;
+}
+
+.prompt-type-badge.default {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.prompt-content {
+    margin-bottom: 10px;
+}
+
+.prompt-display {
+    width: 100%;
+    min-height: 80px;
+    max-height: 200px;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    background: #f8f9fa;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    resize: vertical;
+    color: #495057;
+}
+
+.prompt-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.no-custom-kits {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+.no-data-message {
+    text-align: center;
+    color: #6c757d;
+}
+
+.no-data-message h4 {
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+/* キットプレビューモーダル */
+.kit-preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+}
+
+.kit-preview-content {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.preview-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 15px 15px 0 0;
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-preview {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.close-preview:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.preview-body {
+    padding: 30px;
+}
+
+.kit-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.color-palette-preview {
+    margin-bottom: 20px;
+}
+
+.colors {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.color-sample {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.color-code {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: monospace;
+    margin-bottom: 5px;
+}
+
+.prompt-preview {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+}
+
+.prompt-text-preview {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .prompts-modal-content {
+        width: 98%;
+        margin: 1% auto;
+    }
+    
+    .prompts-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .prompts-stats {
+        justify-content: center;
+    }
+    
+    .prompts-actions {
+        justify-content: center;
+    }
+    
+    .kit-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .kit-actions {
+        align-self: flex-start;
+    }
+    
+    .kit-meta {
+        justify-content: flex-start;
+    }
+    
+    .kit-preview-content {
+        width: 95%;
+    }
+    
+    .preview-header {
+        padding: 15px 20px;
+    }
+    
+    .preview-body {
+        padding: 20px;
+    }
+    
+    .kit-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .colors {
+        justify-content: center;
     }
 }
